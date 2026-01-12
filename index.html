@@ -1,176 +1,210 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Undangan Digital | EtaWeb</title>
+  <meta charset="UTF-8" />
+  <title>AI Undangan Online | EtaWeb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-  *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-  body{
-    margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#fff;padding:18px;
-  }
-  .card{
-    width:100%;max-width:420px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
-    border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:18px 16px;
-    box-shadow:0 18px 60px rgba(0,0,0,.45);text-align:center;
-  }
-  .logo{display:flex;justify-content:center;margin:6px 0 12px}
-  .logo img{width:84px;height:84px;object-fit:contain}
-  h1{margin:4px 0 6px;font-size:20px;color:#ff4d4d}
-  p.sub{margin:0 0 14px;color:#cfcfcf;font-size:13px}
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  label{display:block;text-align:left;margin-top:10px;color:#ddd;font-size:12px}
-  input,textarea,select{
-    width:100%;margin-top:6px;border:0;border-radius:12px;padding:12px;
-    background:#0d0d0d;color:#fff;font-size:14px;outline:none;
-  }
-  textarea{resize:none;min-height:90px}
+    .container {
+      max-width: 420px;
+      width: 100%;
+      background: #0d0d0d;
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.7);
+      text-align: center;
+      animation: fadeIn .8s ease;
+    }
 
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .hint{margin-top:8px;color:#bdbdbd;font-size:12px;line-height:1.4;text-align:left}
-  .preview{
-    margin-top:10px;background:#0d0d0d;border-radius:14px;padding:10px;text-align:left
-  }
-  .preview img{width:72px;height:72px;border-radius:14px;object-fit:cover;border:1px solid rgba(255,255,255,.1)}
-  .preview .meta{display:flex;gap:10px;align-items:center}
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-  .envelope{
-    margin:16px auto 8px;width:112px;height:112px;border-radius:20px;background:#c1121f;
-    display:flex;align-items:center;justify-content:center;font-size:48px;cursor:pointer;
-    user-select:none;touch-action:manipulation;position:relative;z-index:10;
-    animation:pulse 1.6s infinite;
-  }
-  @keyframes pulse{
-    0%{transform:scale(1);box-shadow:0 0 0 0 rgba(193,18,31,.55)}
-    70%{transform:scale(1.08);box-shadow:0 0 0 18px rgba(193,18,31,0)}
-    100%{transform:scale(1);box-shadow:0 0 0 0 rgba(193,18,31,0)}
-  }
+    .logo img {
+      width: 90px;
+      margin-bottom: 10px;
+    }
 
-  .btn{
-    width:100%;border:0;border-radius:14px;padding:12px;margin-top:10px;
-    background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-weight:700;
-    font-size:14px;cursor:pointer;
-  }
-  .footer{margin-top:12px;font-size:11px;color:#cfcfcf;opacity:.65}
-  .error{margin-top:10px;background:#2a0000;border:1px solid #ff4d4d;color:#ffd0d0;padding:10px;border-radius:12px;font-size:12px;text-align:left;display:none}
-</style>
+    h1 {
+      color: #ff4d4d;
+      margin: 10px 0 5px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 15px;
+    }
+
+    .price {
+      margin-bottom: 20px;
+    }
+
+    .price s {
+      font-size: 14px;
+      color: #777;
+    }
+
+    .price strong {
+      display: block;
+      font-size: 22px;
+      color: #00ffcc;
+      margin-top: 5px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 14px;
+      resize: none;
+      margin-top: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 14px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      background: linear-gradient(135deg,#ff4d4d,#ff0000);
+      color: #fff;
+      cursor: pointer;
+      transition: transform .15s ease;
+    }
+
+    button:active {
+      transform: scale(.96);
+    }
+
+    pre {
+      background: #000;
+      padding: 15px;
+      border-radius: 14px;
+      margin-top: 15px;
+      font-size: 14px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      max-height: 260px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .next-btn {
+      margin-top: 15px;
+      background: linear-gradient(135deg,#00ffcc,#00bfa5);
+      color: #000;
+    }
+
+    .footer {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #777;
+    }
+
+    /* AMPLop */
+    .envelope-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .envelope {
+      width: 90px;
+      height: 90px;
+      background: #c1121f;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform .4s ease;
+    }
+
+    .envelope img {
+      width: 45px;
+    }
+
+    .envelope.opened {
+      transform: scale(1.2) rotate(10deg);
+      opacity: 0;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="card">
-    <div class="logo">
-      <!-- Logo wajib ada: /logo.png -->
-      <img src="logo.png" alt="Logo EtaWeb" onerror="logoError()" />
-    </div>
 
-    <h1>Undangan Digital</h1>
-    <p class="sub">Isi data ➜ pilih lagu ➜ upload foto ➜ klik amplop</p>
+<div class="container">
 
-    <div class="row">
-      <div>
-        <label>Nama Pengantin Pria</label>
-        <input id="pria" placeholder="Contoh: Hilmi" />
-      </div>
-      <div>
-        <label>Nama Pengantin Wanita</label>
-        <input id="wanita" placeholder="Contoh: Yanti" />
-      </div>
-    </div>
-
-    <label>Tanggal Acara (format aman: YYYY-MM-DD)</label>
-    <input id="tanggal" placeholder="2026-05-12" />
-
-    <label>Alamat Acara</label>
-    <textarea id="alamat" placeholder="Tulis alamat lengkap"></textarea>
-
-    <label>Link Google Maps</label>
-    <input id="maps" placeholder="Tempel link Google Maps" />
-
-    <label>Pilih Lagu</label>
-    <select id="lagu">
-      <option value="musik/wedding1.mp3">Wedding 1 — You're Still The One (Shania Twain)</option>
-      <option value="musik/wedding2.mp3">Wedding 2 — Pilihanku (MALIQ & D'Essentials)</option>
-      <option value="musik/wedding3.mp3">Wedding 3 — Beautiful In White (Shane Filan)</option>
-    </select>
-
-    <label>Upload Foto Mempelai (opsional)</label>
-    <input id="foto" type="file" accept="image/*" />
-
-    <div class="preview" id="previewBox" style="display:none">
-      <div class="meta">
-        <img id="previewImg" alt="preview" />
-        <div>
-          <div style="font-weight:700">Foto siap dipakai</div>
-          <div style="font-size:12px;color:#cfcfcf">Akan tampil di undangan</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="envelope" onclick="openInvite()">✉️</div>
-    <div class="hint">Musik akan mulai setelah kamu membuka undangan (aturan browser HP).</div>
-
-    <button class="btn" onclick="shareWA()">📤 Share WhatsApp</button>
-
-    <div class="error" id="errBox"></div>
-    <div class="footer">© EtaWeb • Digital Invitation</div>
+  <!-- LOGO -->
+  <div class="logo">
+    <img src="logo.png" alt="EtaWeb Logo">
   </div>
 
-<script>
-  // Preview foto + simpan base64 ke localStorage
-  const fotoInput = document.getElementById('foto');
-  fotoInput.addEventListener('change', () => {
-    const f = fotoInput.files && fotoInput.files[0];
-    if(!f){
-      localStorage.removeItem('foto');
-      document.getElementById('previewBox').style.display='none';
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      localStorage.setItem('foto', e.target.result);
-      document.getElementById('previewImg').src = e.target.result;
-      document.getElementById('previewBox').style.display='block';
-    };
-    reader.readAsDataURL(f);
-  });
+  <!-- AMPL0P -->
+  <div class="envelope-wrapper">
+    <div class="envelope" id="openEnvelope">
+      <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png">
+    </div>
+  </div>
+  <div class="subtitle">Klik amplop untuk membuka undangan</div>
 
-  function showErr(msg){
-    const box = document.getElementById('errBox');
-    box.style.display='block';
-    box.textContent = msg;
-  }
+  <!-- TITLE -->
+  <h1>AI Undangan Online</h1>
+  <p class="subtitle">Buat undangan digital otomatis langsung dari HP</p>
 
-  function logoError(){
-    showErr("Logo tidak ketemu. Pastikan file bernama 'logo.png' dan posisinya sejajar dengan index.html (bukan di folder lain).");
-  }
+  <!-- PRICE -->
+  <div class="price">
+    <s>Rp100.000</s>
+    <strong>GRATIS</strong>
+  </div>
 
-  function openInvite(){
-    const p = document.getElementById('pria').value.trim();
-    const w = document.getElementById('wanita').value.trim();
-    const t = document.getElementById('tanggal').value.trim();
-    const a = document.getElementById('alamat').value.trim();
-    const m = document.getElementById('maps').value.trim();
-    const g = document.getElementById('lagu').value;
+  <!-- INPUT -->
+  <textarea id="prompt" placeholder="Contoh:
+Undangan pernikahan
+Hilmi Al Hanif & Yanti
+12 Januari 2026
+Jl Ahmad Yani, Bandung
+Bahasa formal dan islami"></textarea>
 
-    if(!p||!w||!t||!a||!m){
-      showErr("Lengkapi: nama pria, nama wanita, tanggal, alamat, dan link maps.");
-      return;
-    }
+  <!-- GENERATE -->
+  <button onclick="generateInvitation()">✨ Buat Undangan AI</button>
 
-    // simpan data (biar stabil & tidak kepanjangan di URL)
-    localStorage.setItem('data_undangan', JSON.stringify({p,w,t,a,m,g}));
+  <!-- RESULT -->
+  <pre id="hasilAI">Hasil teks AI akan muncul di sini...</pre>
 
-    // pindah halaman
-    window.location.href = "undangan.html";
-  }
+  <!-- NEXT -->
+  <button class="next-btn" onclick="window.location.href='undangan.html'">
+    👉 Lanjut ke Web Undangan
+  </button>
 
-  function shareWA(){
-    const link = window.location.href;
-    const text = `Assalamu’alaikum 🙏\n\nIni undangan digital:\n${link}`;
-    window.open("https://wa.me/?text="+encodeURIComponent(text), "_blank");
-  }
-</script>
+  <!-- FOOTER -->
+  <div class="footer">
+    Dibuat dengan ❤️ oleh EtaWeb
+  </div>
+
+</div>
+
+<!-- SCRIPT -->
+<script src="script.js"></script>
+
 </body>
 </html>
