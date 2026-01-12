@@ -2,135 +2,198 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>AI Undangan Pernikahan | EtaWeb</title>
+  <title>AI Wedding Invitation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Fonts -->
+  <!-- Font -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- SCRIPT UTAMA -->
+  <script src="script.js" defer></script>
 
   <style>
-    body{
+    :root {
+      --gold:#d6b46a;
+      --cream:#faf7f2;
+      --dark:#333;
+    }
+    body {
       margin:0;
       font-family:'Poppins',sans-serif;
-      background:linear-gradient(135deg,#fdfcf9,#f5efe6);
-      color:#333;
-      padding:20px;
+      background:var(--cream);
+      color:var(--dark);
     }
-    .container{
-      max-width:520px;
+    header {
+      padding:60px 20px;
+      text-align:center;
+      background:#fff;
+    }
+    h1,h2 {
+      font-family:'Playfair Display',serif;
+    }
+    section {
+      max-width:900px;
       margin:auto;
+      padding:40px 20px;
+    }
+    .card {
       background:#fff;
       border-radius:20px;
-      padding:24px;
-      box-shadow:0 15px 40px rgba(0,0,0,.08);
+      padding:25px;
+      margin-bottom:25px;
     }
-    h1{
-      font-family:'Playfair Display',serif;
-      color:#b89b5e;
-      text-align:center;
-    }
-    p{
-      font-size:14px;
-      color:#777;
-      text-align:center;
-    }
-    label{
+    label {
+      font-weight:500;
       display:block;
-      margin-top:14px;
-      font-size:13px;
-      color:#555;
+      margin-bottom:6px;
     }
-    input, textarea, select{
+    input, textarea, select {
       width:100%;
       padding:12px;
       border-radius:12px;
-      border:1px solid #ddd;
-      margin-top:6px;
-      font-size:14px;
+      border:1px solid #ccc;
+      margin-bottom:15px;
+      font-family:inherit;
     }
-    textarea{resize:none}
-    button{
-      width:100%;
-      padding:14px;
-      border:none;
-      border-radius:30px;
-      margin-top:18px;
-      font-size:16px;
-      background:linear-gradient(135deg,#d6b36a,#b89b5e);
+    button {
+      background:var(--gold);
       color:#fff;
+      border:none;
+      padding:14px;
+      width:100%;
+      border-radius:30px;
+      font-size:1rem;
       cursor:pointer;
     }
-    button.secondary{
-      background:#eee;
-      color:#555;
+    button:disabled {
+      opacity:.6;
     }
-    #status{
+    .hint {
+      font-size:.85rem;
+      opacity:.7;
+    }
+    footer {
       text-align:center;
-      font-size:13px;
-      margin-top:10px;
-      color:#777;
+      padding:30px;
+      font-size:.8rem;
+      opacity:.7;
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>AI Undangan Pernikahan</h1>
-  <p>Buat undangan pernikahan modern & elegan otomatis</p>
+<header>
+  <h1>AI Wedding Invitation</h1>
+  <p>Buat undangan pernikahan modern secara otomatis</p>
+</header>
 
-  <!-- AI PROMPT -->
-  <label>Ceritakan secara singkat tentang pernikahanmu</label>
-  <textarea id="aiPrompt" rows="3"
-    placeholder="Contoh: Kami menikah 12 Desember 2026 di Jakarta, akad pagi, resepsi siang..."></textarea>
+<section>
 
-  <button class="secondary" onclick="generateAIStory()">
-    <i class="fas fa-wand-magic-sparkles"></i> Generate dengan AI
-  </button>
+  <!-- PASANGAN -->
+  <div class="card">
+    <h2>Data Pasangan</h2>
 
-  <!-- DATA PASANGAN -->
-  <label>Nama Mempelai Pria</label>
-  <input id="groom" placeholder="Nama mempelai pria">
+    <label>Nama Mempelai Pria</label>
+    <input id="groomName" placeholder="Andi">
 
-  <label>Nama Mempelai Wanita</label>
-  <input id="bride" placeholder="Nama mempelai wanita">
+    <label>Orang Tua Mempelai Pria</label>
+    <input id="groomParents" placeholder="Bapak & Ibu">
 
-  <label>Tanggal Pernikahan</label>
-  <input type="date" id="date">
+    <label>Foto Pria (URL / Base64)</label>
+    <input id="groomPhoto" placeholder="https://...">
 
-  <label>Akad Nikah (jam & keterangan)</label>
-  <input id="akad" placeholder="09.00 WIB - Akad Nikah">
+    <hr>
 
-  <label>Resepsi (jam & keterangan)</label>
-  <input id="resepsi" placeholder="11.00 WIB - Resepsi">
+    <label>Nama Mempelai Wanita</label>
+    <input id="brideName" placeholder="Siti">
 
-  <label>Lokasi Acara</label>
-  <input id="location" placeholder="Gedung / alamat lengkap">
+    <label>Orang Tua Mempelai Wanita</label>
+    <input id="brideParents" placeholder="Bapak & Ibu">
 
-  <!-- STORY -->
-  <label>Kisah Cinta / Cerita Undangan</label>
-  <textarea id="story" rows="4"></textarea>
+    <label>Foto Wanita (URL / Base64)</label>
+    <input id="bridePhoto" placeholder="https://...">
+  </div>
 
-  <!-- MUSIC -->
-  <label>Pilih Musik Latar</label>
-  <select id="music">
-    <option value="wedding1.mp3">You're Still The One – Shania Twain</option>
-    <option value="wedding2.mp3">Pilihanku – MALIQ & D'Essentials</option>
-    <option value="wedding3.mp3">Beautiful In White – Shane Filan</option>
-  </select>
+  <!-- ACARA -->
+  <div class="card">
+    <h2>Detail Acara</h2>
 
-  <!-- SAVE -->
-  <button onclick="saveInvitation()">
-    <i class="fas fa-link"></i> Simpan & Buat Link Undangan
-  </button>
+    <label>Tanggal Akad</label>
+    <input type="date" id="akadDate">
 
-  <div id="status"></div>
-</div>
+    <label>Jam Akad</label>
+    <input id="akadTime" placeholder="08.00 WIB">
 
-<script src="script.js"></script>
+    <label>Tempat Akad</label>
+    <input id="akadPlace">
+
+    <hr>
+
+    <label>Tanggal Resepsi</label>
+    <input type="date" id="resepsiDate">
+
+    <label>Jam Resepsi</label>
+    <input id="resepsiTime" placeholder="11.00 WIB">
+
+    <label>Tempat Resepsi</label>
+    <input id="resepsiPlace">
+  </div>
+
+  <!-- STORY AI -->
+  <div class="card">
+    <h2>Kisah Cinta (AI)</h2>
+
+    <textarea id="storyPrompt" rows="4" placeholder="Kami bertemu di kampus..."></textarea>
+    <button id="generateStoryBtn"> Generate dengan AI</button>
+    <p class="hint">Opsional, akan dilengkapi otomatis jika kosong</p>
+  </div>
+
+  <!-- LOKASI & MUSIK -->
+  <div class="card">
+    <h2>Lokasi & Musik</h2>
+
+    <label>Alamat Google Maps</label>
+    <input id="mapsInput" placeholder="Gedung Serbaguna Jakarta">
+
+    <label>Pilih Musik</label>
+    <select id="musicSelect">
+      <option value="wedding1.mp3">Wedding Song 1</option>
+      <option value="wedding2.mp3">Wedding Song 2</option>
+      <option value="wedding3.mp3">Wedding Song 3</option>
+    </select>
+  </div>
+
+  <!-- GALERI -->
+  <div class="card">
+    <h2>Galeri Foto</h2>
+
+    <textarea id="galleryInput" rows="4" placeholder="Pisahkan URL foto dengan baris baru"></textarea>
+    <p class="hint">Gunakan URL gambar atau base64</p>
+  </div>
+
+  <!-- SIMPAN -->
+  <div class="card">
+    <button id="saveInviteBtn"> Simpan & Buat Link Undangan</button>
+    <p id="statusText" class="hint"></p>
+  </div>
+
+</section>
+
+<footer>
+  EtaWeb • AI Wedding Invitation
+</footer>
+
+<script>
+/* fallback jika script.js gagal load */
+if (typeof saveInvite !== "function") {
+  document.getElementById("saveInviteBtn").onclick = () =>
+    alert("script.js belum termuat");
+}
+</script>
 
 </body>
 </html>
