@@ -2,42 +2,28 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Undangan Digital | EtaWeb</title>
+<title>Undangan Pernikahan</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{box-sizing:border-box;font-family:'Segoe UI',sans-serif}
 body{
   margin:0;
-  min-height:100vh;
+  height:100vh;
   background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
+  font-family:Arial,sans-serif;
   color:#fff;
-  overflow:hidden;
-}
-
-/* CONTAINER */
-.wrapper{
   text-align:center;
-  animation:fadeIn 1s ease;
 }
-
-/* LOGO */
+.wrapper{
+  max-width:360px;
+}
 .logo img{
   width:90px;
-  margin-bottom:15px;
+  margin-bottom:20px;
 }
-
-/* NAMA TAMU */
-.to{
-  font-size:14px;
-  color:#ccc;
-  margin-bottom:10px;
-}
-
-/* AMPLOP */
 .envelope{
   width:120px;
   height:120px;
@@ -48,125 +34,72 @@ body{
   justify-content:center;
   font-size:50px;
   cursor:pointer;
-  animation:pulse 2s infinite;
-}
-.envelope:active{transform:scale(.95)}
-
-/* MUSIK */
-.music{
-  margin-top:15px;
-}
-select{
-  padding:10px;
-  border-radius:10px;
-  border:none;
-  width:100%;
-}
-
-/* BUTTON */
-.btn{
-  margin-top:15px;
-  background:linear-gradient(135deg,#25D366,#128C7E);
-  border:none;
-  padding:12px;
-  border-radius:12px;
-  width:100%;
-  color:#fff;
-  font-size:15px;
-  cursor:pointer;
-}
-
-/* FOOTER */
-.footer{
-  margin-top:25px;
-  font-size:12px;
-  opacity:.6;
-}
-
-/* ANIMATION */
-@keyframes fadeIn{
-  from{opacity:0;transform:translateY(20px)}
-  to{opacity:1;transform:translateY(0)}
+  margin:20px auto;
+  animation:pulse 1.5s infinite;
 }
 @keyframes pulse{
-  0%{box-shadow:0 0 0 0 rgba(193,18,31,.6)}
-  70%{box-shadow:0 0 0 20px rgba(193,18,31,0)}
-  100%{box-shadow:0 0 0 0 rgba(193,18,31,0)}
+  0%{transform:scale(1)}
+  50%{transform:scale(1.08)}
+  100%{transform:scale(1)}
+}
+select,button{
+  width:100%;
+  padding:12px;
+  margin-top:12px;
+  border-radius:10px;
+  border:none;
+  font-size:14px;
+}
+button{
+  background:#ff4d4d;
+  color:#fff;
+  font-weight:bold;
+}
+.footer{
+  font-size:11px;
+  color:#ccc;
+  margin-top:15px;
 }
 </style>
 </head>
 
 <body>
-
-<div class="wrapper" id="wrapper">
-
-  <!-- LOGO -->
+<div class="wrapper">
   <div class="logo">
-    <img src="logo.png" alt="EtaWeb">
+    <img src="img/logo.png" alt="Logo">
   </div>
 
-  <!-- NAMA TAMU -->
-  <div class="to" id="toName">Kepada Yth.</div>
+  <h3>Klik amplop untuk membuka undangan</h3>
 
-  <!-- AMPLOP -->
+  <select id="musik">
+    <option value="wedding1.mp3">Wedding 1 – You're Still The One</option>
+    <option value="wedding2.mp3">Wedding 2 – Pilihanku</option>
+    <option value="wedding3.mp3">Wedding 3 – Beautiful In White</option>
+  </select>
+
   <div class="envelope" onclick="openInvite()">✉️</div>
-  <p>Klik amplop untuk membuka undangan</p>
 
-  <!-- MUSIK -->
-  <div class="music">
-    <select id="musik">
-      <option value="musik/wedding1.mp3">
-        You're Still The One – Shania Twain
-      </option>
-      <option value="musik/wedding2.mp3">
-        MALIQ & D'Essentials – Pilihanku
-      </option>
-      <option value="musik/wedding3.mp3">
-        Shane Filan – Beautiful In White
-      </option>
-    </select>
-  </div>
+  <button onclick="shareWA()">📤 Share WhatsApp</button>
 
-  <!-- SHARE WA -->
-  <button class="btn" onclick="shareWA()">📤 Share WhatsApp</button>
-
-  <!-- WATERMARK -->
-  <div class="footer">
-    © EtaWeb • Digital Wedding Invitation
-  </div>
-
+  <div class="footer">© EtaWeb – Digital Invitation</div>
 </div>
 
-<audio id="bgMusic" loop></audio>
-
 <script>
-// AMBIL NAMA TAMU DARI URL
-const params = new URLSearchParams(window.location.search);
-const to = params.get('to');
-if(to){
-  document.getElementById('toName').innerText = "Kepada Yth. " + decodeURIComponent(to);
-}
-
-// SHARE WA
-function shareWA(){
-  const link = window.location.href;
-  const text = `Assalamu’alaikum,\nSaya mengundang Anda untuk menghadiri acara pernikahan kami.\n\nBuka undangan:\n${link}`;
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank');
-}
-
-// BUKA UNDANGAN
 function openInvite(){
-  const music = document.getElementById('musik').value;
-  const audio = document.getElementById('bgMusic');
-  audio.src = music;
-  audio.play();
+  const music=document.getElementById('musik').value;
+  window.location.href=
+    "undangan.html?music="+encodeURIComponent(music);
+}
 
-  document.getElementById('wrapper').style.opacity="0";
-  setTimeout(()=>{
-    window.location.href = "undangan.html?music="+encodeURIComponent(music);
-  },400);
+function shareWA(){
+  const link=window.location.href;
+  const text=
+    "Assalamu’alaikum, kami mengundang Anda ke acara pernikahan kami:\n\n"+link;
+  window.open(
+    "https://wa.me/?text="+encodeURIComponent(text),
+    "_blank"
+  );
 }
 </script>
-
 </body>
 </html>
