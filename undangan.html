@@ -2,172 +2,184 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Undangan Pernikahan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- Font -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Script utama (WAJIB sama dengan index.html) -->
-  <script src="script.js" defer></script>
+  <!-- Script utama (SAMA dengan index.html) -->
+  <script src="./script.js" defer></script>
 
   <style>
     :root {
-      --gold: #d6b46a;
-      --cream: #faf7f2;
-      --dark: #333;
+      --gold:#d6b46a;
+      --cream:#faf7f2;
+      --dark:#333;
+      --border:#e6e2da;
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: var(--cream);
-      color: var(--dark);
-      scroll-behavior: smooth;
-    }
-    h1,h2,h3 {
-      font-family: 'Playfair Display', serif;
+      margin:0;
+      font-family:'Poppins',sans-serif;
+      background:var(--cream);
+      color:var(--dark);
+      scroll-behavior:smooth;
     }
     section {
-      padding: 60px 20px;
-      max-width: 900px;
-      margin: auto;
-      text-align: center;
+      max-width:900px;
+      margin:auto;
+      padding:60px 20px;
+      text-align:center;
+    }
+    h1,h2,h3 {
+      font-family:'Playfair Display',serif;
     }
 
-    /* HERO */
+    /* HERO / COVER */
     .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      background: linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      background:
+        linear-gradient(rgba(0,0,0,.45),rgba(0,0,0,.45)),
         url("https://images.unsplash.com/photo-1523438885200-e635ba2c371e") center/cover;
-      color: #fff;
-      padding: 30px;
-    }
-    .hero h1 {
-      font-size: 2.4rem;
-      margin: 10px 0;
+      color:#fff;
+      padding:20px;
     }
     .hero p {
-      letter-spacing: 2px;
-      font-size: .9rem;
+      letter-spacing:2px;
+      font-size:.9rem;
+      margin:0;
     }
-    .btn-open {
-      margin-top: 30px;
-      padding: 14px 30px;
-      border-radius: 40px;
-      border: none;
-      background: var(--gold);
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
+    .hero h1 {
+      font-size:2.4rem;
+      margin:12px 0;
+    }
+    .hero button {
+      margin-top:30px;
+      padding:14px 30px;
+      border-radius:40px;
+      border:none;
+      background:var(--gold);
+      color:#fff;
+      font-size:1rem;
+      cursor:pointer;
     }
 
     /* PASANGAN */
     .couple {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
-      gap: 30px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:30px;
+      margin-top:40px;
     }
     .person img {
-      width: 160px;
-      height: 160px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 5px solid var(--gold);
+      width:160px;
+      height:160px;
+      border-radius:50%;
+      object-fit:cover;
+      border:5px solid var(--gold);
     }
 
     /* COUNTDOWN */
     .countdown {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
+      display:flex;
+      justify-content:center;
+      gap:15px;
+      flex-wrap:wrap;
     }
     .countdown div {
-      background: #fff;
-      padding: 12px 18px;
-      border-radius: 12px;
-      min-width: 80px;
+      background:#fff;
+      border-radius:14px;
+      padding:12px 18px;
+      min-width:90px;
     }
     .countdown span {
-      display: block;
-      font-size: 1.6rem;
-      font-weight: bold;
-      color: var(--gold);
+      display:block;
+      font-size:1.6rem;
+      font-weight:bold;
+      color:var(--gold);
     }
 
     /* GALERI */
     .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(120px,1fr));
-      gap: 10px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+      gap:10px;
     }
     .gallery img {
-      width: 100%;
-      border-radius: 12px;
+      width:100%;
+      border-radius:12px;
+      cursor:pointer;
+    }
+
+    /* MAP */
+    iframe {
+      border:0;
+      width:100%;
+      height:300px;
+      border-radius:16px;
     }
 
     /* GUESTBOOK */
     .guestbook form input,
     .guestbook form textarea,
     .guestbook form select {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
+      width:100%;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid #ccc;
+      margin-bottom:10px;
+      font-family:inherit;
     }
     .guestbook form button {
-      background: var(--gold);
-      color: #fff;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      border-radius: 20px;
-      cursor: pointer;
+      background:var(--gold);
+      color:#fff;
+      border:none;
+      padding:12px;
+      border-radius:20px;
+      width:100%;
+      cursor:pointer;
     }
-    .guestbook-list {
-      margin-top: 20px;
-      text-align: left;
-    }
-    .guestbook-item {
-      background: #fff;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 10px;
+    .guest-item {
+      background:#fff;
+      border-radius:12px;
+      padding:12px;
+      margin-bottom:10px;
+      text-align:left;
     }
 
-    /* FOOTER */
     footer {
-      text-align: center;
-      padding: 40px 20px;
-      font-size: .8rem;
-      opacity: .7;
+      text-align:center;
+      padding:40px 20px;
+      font-size:.8rem;
+      opacity:.7;
     }
     footer img {
-      height: 22px;
-      vertical-align: middle;
+      height:22px;
+      vertical-align:middle;
+      margin-right:6px;
     }
   </style>
 </head>
 
 <body>
 
-<!-- AUDIO -->
+<!-- MUSIC -->
 <audio id="music" loop></audio>
 
 <!-- HERO -->
 <section class="hero">
   <p>The Wedding Of</p>
   <h1 id="heroNames">Nama & Nama</h1>
-  <p id="heroDate">Tanggal Acara</p>
-  <button class="btn-open" id="openInvitationBtn">Buka Undangan</button>
+  <p id="heroDate">Tanggal</p>
+  <button onclick="openInvitation()">Buka Undangan</button>
 </section>
 
 <div id="content">
@@ -178,17 +190,18 @@
   <div class="couple">
     <div class="person">
       <img id="groomPhoto" alt="">
-      <h3 id="groomNameText"></h3>
-      <p id="groomParentsText"></p>
+      <h3 id="groomText"></h3>
+      <p id="groomParents"></p>
     </div>
     <div class="person">
       <img id="bridePhoto" alt="">
-      <h3 id="brideNameText"></h3>
-      <p id="brideParentsText"></p>
+      <h3 id="brideText"></h3>
+      <p id="brideParents"></p>
     </div>
   </div>
-  <p style="margin-top:20px;font-style:italic">
-    “Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu...”  
+
+  <p style="margin-top:30px;font-style:italic">
+    “Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu...”
     <br>(QS. Ar-Rum: 21)
   </p>
 </section>
@@ -196,19 +209,25 @@
 <!-- DETAIL -->
 <section>
   <h2>Detail Acara</h2>
-  <p><b>Akad</b><br><span id="akadText"></span></p>
-  <p><b>Resepsi</b><br><span id="resepsiText"></span></p>
+  <p><b>Akad</b><br><span id="akadInfo"></span></p>
+  <p><b>Resepsi</b><br><span id="resepsiInfo"></span></p>
 </section>
 
 <!-- COUNTDOWN -->
 <section>
   <h2>Hitung Mundur</h2>
   <div class="countdown">
-    <div><span id="cdDays">0</span>Hari</div>
-    <div><span id="cdHours">0</span>Jam</div>
-    <div><span id="cdMinutes">0</span>Menit</div>
-    <div><span id="cdSeconds">0</span>Detik</div>
+    <div><span id="cd-days">0</span>Hari</div>
+    <div><span id="cd-hours">0</span>Jam</div>
+    <div><span id="cd-mins">0</span>Menit</div>
+    <div><span id="cd-secs">0</span>Detik</div>
   </div>
+</section>
+
+<!-- STORY -->
+<section>
+  <h2>Kisah Cinta</h2>
+  <p id="storyText"></p>
 </section>
 
 <!-- GALERI -->
@@ -219,114 +238,32 @@
 
 <!-- MAP -->
 <section>
-  <h2>Lokasi</h2>
-  <iframe id="mapsFrame" width="100%" height="300" style="border:0;border-radius:12px" loading="lazy"></iframe>
+  <h2>Lokasi Acara</h2>
+  <iframe id="mapEmbed" loading="lazy"></iframe>
 </section>
 
 <!-- GUESTBOOK -->
 <section class="guestbook">
   <h2>Buku Tamu</h2>
-  <form id="guestbookForm">
-    <input id="guestName" placeholder="Nama" required>
-    <textarea id="guestMessage" placeholder="Ucapan & doa" required></textarea>
-    <select id="guestHadir">
+  <form id="guestForm">
+    <input id="gbName" placeholder="Nama" required>
+    <textarea id="gbMsg" placeholder="Ucapan & doa" required></textarea>
+    <select id="gbHadir">
       <option value="Hadir">Hadir</option>
       <option value="Tidak Hadir">Tidak Hadir</option>
     </select>
     <button>Kirim Ucapan</button>
   </form>
 
-  <div class="guestbook-list" id="guestbookList"></div>
+  <div id="guestList"></div>
 </section>
 
 <footer>
-  <img src="logo.png" alt="logo"> EtaWeb • AI Wedding Invitation
+  <img src="logo.png" alt="logo">
+  EtaWeb • AI Wedding Invitation
 </footer>
 
-<script>
-(async () => {
-  const url = new URL(location.href);
-  const inviteId = url.searchParams.get("invite");
-  const guestNameFromUrl = url.searchParams.get("to");
-
-  if (!inviteId) {
-    alert("Invite ID tidak ditemukan");
-    return;
-  }
-
-  const res = await fetch(`${__INVITE_API__.ENDPOINTS.get}?id=${inviteId}`);
-  const data = await res.json();
-
-  // HERO
-  heroNames.textContent = `${data.groom.name} & ${data.bride.name}`;
-  heroDate.textContent = data.resepsi.date;
-
-  // MUSIC
-  music.src = data.music || "wedding1.mp3";
-
-  // PASANGAN
-  groomNameText.textContent = data.groom.name;
-  groomParentsText.textContent = data.groom.parents;
-  groomPhoto.src = data.groom.photo;
-
-  brideNameText.textContent = data.bride.name;
-  brideParentsText.textContent = data.bride.parents;
-  bridePhoto.src = data.bride.photo;
-
-  // DETAIL
-  akadText.textContent = `${data.akad.date} • ${data.akad.time} • ${data.akad.place}`;
-  resepsiText.textContent = `${data.resepsi.date} • ${data.resepsi.time} • ${data.resepsi.place}`;
-
-  // MAP
-  mapsFrame.src = data.maps.embed;
-
-  // GALERI
-  data.gallery.forEach(src => {
-    const img = document.createElement("img");
-    img.src = src;
-    gallery.appendChild(img);
-  });
-
-  // COUNTDOWN
-  const target = new Date(data.resepsi.date).getTime();
-  setInterval(() => {
-    const d = target - Date.now();
-    if (d < 0) return;
-    cdDays.textContent = Math.floor(d / 86400000);
-    cdHours.textContent = Math.floor(d % 86400000 / 3600000);
-    cdMinutes.textContent = Math.floor(d % 3600000 / 60000);
-    cdSeconds.textContent = Math.floor(d % 60000 / 1000);
-  }, 1000);
-
-  // GUESTBOOK
-  if (guestNameFromUrl) guestName.value = guestNameFromUrl;
-
-  async function loadGuestbook() {
-    const list = await __INVITE_API__.guestbookList(inviteId);
-    guestbookList.innerHTML = "";
-    list.reverse().forEach(g => {
-      const div = document.createElement("div");
-      div.className = "guestbook-item";
-      div.innerHTML = `<b>${g.name}</b> (${g.hadir})<br>${g.message}`;
-      guestbookList.appendChild(div);
-    });
-  }
-  loadGuestbook();
-  setInterval(loadGuestbook, 4000);
-
-  guestbookForm.onsubmit = async (e) => {
-    e.preventDefault();
-    await __INVITE_API__.guestbookAdd(
-      inviteId,
-      guestName.value,
-      guestMessage.value,
-      guestHadir.value
-    );
-    guestMessage.value = "";
-    loadGuestbook();
-  };
-})();
-</script>
+</div>
 
 </body>
 </html>

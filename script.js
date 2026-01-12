@@ -1,196 +1,110 @@
-/* =========================================================
+/* ======================================================
    CONFIG
-========================================================= */
+====================================================== */
 const API_BASE = "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev";
-let currentInviteId = null;
-let currentMusic = "wedding1.mp3";
 
-/* =========================================================
+/* ======================================================
    UTIL
-========================================================= */
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => document.querySelectorAll(sel);
+====================================================== */
+const $ = (id) => document.getElementById(id);
+const $$ = (q) => document.querySelectorAll(q);
 
 function toast(msg, ok = true) {
-  const el = $("#toast");
-  if (!el) return;
-  el.textContent = msg;
-  el.className = ok ? "toast ok" : "toast err";
-  el.style.display = "block";
-  setTimeout(() => (el.style.display = "none"), 1800);
+  const t = $("toast");
+  if (!t) return;
+  t.textContent = msg;
+  t.style.background = ok ? "#333" : "#b00020";
+  t.style.display = "block";
+  setTimeout(() => (t.style.display = "none"), 2000);
 }
 
 function qs(name) {
   return new URLSearchParams(window.location.search).get(name);
 }
 
-function safe(v, d = "") {
-  return v ?? d;
-}
-
-/* =========================================================
+/* ======================================================
    INIT
-========================================================= */
+====================================================== */
 document.addEventListener("DOMContentLoaded", () => {
-  // Loader
-  const loader = $("#loader");
-  if (loader) setTimeout(() => (loader.style.display = "none"), 800);
-
-  // Auto-load invite if ?invite=
   const inviteId = qs("invite");
   if (inviteId) loadInvite(inviteId);
 
-  // Guest name auto ?to=
-  const toName = qs("to");
-  if (toName && $("#guestName")) $("#guestName").textContent = decodeURIComponent(toName);
+  const to = qs("to");
+  if (to && $("guestName")) $("guestName").textContent = decodeURIComponent(to);
 
-  // Scroll reveal
-  initReveal();
-
-  // Gallery lightbox
-  initLightbox();
-
-  // Guestbook live
   initGuestbook();
-
-  // Music
-  const music = $("#music");
-  if (music) music.src = currentMusic;
 });
 
-/* =========================================================
-   MUSIC
-========================================================= */
-function playMusic() {
-  const m = $("#music");
-  if (!m) return;
-  m.play().catch(() => {});
-}
-function toggleMusic() {
-  const m = $("#music");
-  if (!m) return;
-  m.paused ? m.play().catch(() => {}) : m.pause();
-}
-function chooseMusic(file) {
-  currentMusic = file;
-  const m = $("#music");
-  if (m) {
-    m.src = file;
-    m.play().catch(() => {});
-  }
-}
-
-/* =========================================================
-   OPEN COVER
-========================================================= */
-function openInvitation() {
-  $("#content")?.scrollIntoView({ behavior: "smooth" });
-  playMusic();
-  document.body.classList.add("opened");
-}
-
-/* =========================================================
-   MAPS
-========================================================= */
-function mapsEmbedFromText(text) {
-  if (!text) return "";
-  // if user pasted maps short link or text, fallback to query embed
-  return `https://www.google.com/maps?q=${encodeURIComponent(text)}&output=embed`;
-}
-function openMaps(text) {
-  const url = `https://www.google.com/maps?q=${encodeURIComponent(text)}`;
-  window.open(url, "_blank");
-}
-
-/* =========================================================
-   COUNTDOWN
-========================================================= */
-let countdownTimer = null;
-function startCountdown(dateStr) {
-  if (!dateStr) return;
-  if (countdownTimer) clearInterval(countdownTimer);
-  const target = new Date(dateStr).getTime();
-
-  countdownTimer = setInterval(() => {
-    const now = Date.now();
-    const diff = target - now;
-    if (diff <= 0) {
-      clearInterval(countdownTimer);
-      updateCountdown(0, 0, 0, 0);
-      return;
-    }
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const m = Math.floor((diff / (1000 * 60)) % 60);
-    const s = Math.floor((diff / 1000) % 60);
-    updateCountdown(d, h, m, s);
-  }, 1000);
-}
-
-function updateCountdown(d, h, m, s) {
-  $("#cd-days") && ($("#cd-days").textContent = d);
-  $("#cd-hours") && ($("#cd-hours").textContent = h);
-  $("#cd-mins") && ($("#cd-mins").textContent = m);
-  $("#cd-secs") && ($("#cd-secs").textContent = s);
-}
-
-/* =========================================================
-   AI GENERATE
-========================================================= */
+/* ======================================================
+   AI GENERATE (INDEX)
+====================================================== */
 async function generateAI() {
-  const input = $("#aiInput")?.value?.trim();
-  if (!input) return toast("Isi prompt dulu", false);
+  const prompt = $("storyPrompt").value.trim();
+  if (!prompt) return toast("Isi prompt dulu", false);
 
-  $("#aiStatus").textContent = "⏳ Generate AI...";
+  $("aiStatus").textContent = "⏳ Generate AI...";
   try {
-    const res = await fetch(`${API_BASE}/ai`, {
+    const res = await fetch(API_BASE + "/ai", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: input })
+      body: JSON.stringify({ text: prompt })
     });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json?.error || "AI error");
 
-    $("#story").value = json.result || "";
-    $("#aiStatus").textContent = "✅ Cerita berhasil dibuat";
-  } catch (e) {
-    $("#aiStatus").textContent = "❌ Gagal generate";
-    toast(e.message || "Server error", false);
+    const data = await res.json();
+    if (!data.extracted) throw new Error("AI gagal");
+
+    const e = data.extracted;
+
+    // AUTO FILL FORM
+    $("groomName").value = e.groom || $("groomName").value;
+    $("brideName").value = e.bride || $("brideName").value;
+    $("groomParents").value = e.groomParents || "";
+    $("brideParents").value = e.brideParents || "";
+    $("resepsiDate").value = e.dateISO || "";
+    $("akadTime").value = e.akadTime || "";
+    $("resepsiTime").value = e.resepsiTime || "";
+    $("location").value = e.location || "";
+    $("story").value = e.story || "";
+
+    $("aiStatus").textContent = "✅ Data berhasil diisi otomatis";
+  } catch (err) {
+    $("aiStatus").textContent = "❌ Gagal generate AI";
+    toast("Gagal generate AI", false);
   }
 }
 
-/* =========================================================
-   SAVE & CREATE LINK
-========================================================= */
+/* ======================================================
+   SAVE & CREATE LINK (INDEX)
+====================================================== */
 async function saveAndCreate() {
   const payload = collectForm();
   if (!payload) return;
 
-  $("#saveStatus").textContent = "⏳ Menyimpan...";
+  $("saveStatus").textContent = "⏳ Menyimpan...";
   try {
-    const res = await fetch(`${API_BASE}/invite`, {
+    const res = await fetch(API_BASE + "/invite", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json?.error || "Save error");
 
-    currentInviteId = json.id;
-    const link = `${location.origin}${location.pathname.replace(/index\.html$/,"")}undangan.html?invite=${json.id}`;
-    $("#inviteLink").value = link;
-    $("#saveStatus").textContent = "✅ Berhasil disimpan";
+    const data = await res.json();
+    if (!data.id) throw new Error("Gagal simpan");
+
+    $("inviteLink").value = data.url;
+    $("saveStatus").textContent = "✅ Undangan berhasil dibuat";
     toast("Link undangan siap");
-  } catch (e) {
-    $("#saveStatus").textContent = "❌ Gagal menyimpan";
-    toast(e.message || "Server error", false);
+  } catch {
+    $("saveStatus").textContent = "❌ Gagal menyimpan";
+    toast("Gagal menyimpan undangan", false);
   }
 }
 
 function collectForm() {
-  const groom = $("#groomName")?.value?.trim();
-  const bride = $("#brideName")?.value?.trim();
-  const date = $("#weddingDate")?.value;
+  const groom = $("groomName").value.trim();
+  const bride = $("brideName").value.trim();
+  const date = $("resepsiDate").value;
+
   if (!groom || !bride || !date) {
     toast("Nama & tanggal wajib diisi", false);
     return null;
@@ -199,155 +113,148 @@ function collectForm() {
   return {
     groom,
     bride,
-    parentsGroom: safe($("#parentsGroom")?.value),
-    parentsBride: safe($("#parentsBride")?.value),
+    groomParents: $("groomParents").value,
+    brideParents: $("brideParents").value,
     date,
-    akadTime: safe($("#akadTime")?.value),
-    resepsiTime: safe($("#resepsiTime")?.value),
-    location: safe($("#location")?.value),
-    maps: mapsEmbedFromText($("#location")?.value),
-    story: safe($("#story")?.value),
-    music: currentMusic,
-    photos: collectPhotoUrls(),
-    createdAt: Date.now()
+    akadTime: $("akadTime").value,
+    resepsiTime: $("resepsiTime").value,
+    location: $("location").value,
+    maps: $("location").value,
+    story: $("story").value,
+    music: document.querySelector("select")?.value || "wedding1.mp3",
+    photos: Array.from($$(".photo-url"))
+      .map((i) => i.value.trim())
+      .filter(Boolean)
   };
 }
 
-/* =========================================================
-   LOAD INVITE
-========================================================= */
+/* ======================================================
+   LOAD INVITE (UNDANGAN)
+====================================================== */
 async function loadInvite(id) {
   try {
-    const res = await fetch(`${API_BASE}/invite?id=${encodeURIComponent(id)}`);
-    const json = await res.json();
-    if (!res.ok) throw new Error(json?.error || "Load error");
+    const res = await fetch(API_BASE + "/invite?id=" + id);
+    const d = await res.json();
+    if (!d.id) throw new Error();
 
-    renderInvite(json);
-  } catch (e) {
+    $("heroNames").textContent = `${d.groom} & ${d.bride}`;
+    $("heroDate").textContent = d.date;
+
+    $("groomText").textContent = d.groom;
+    $("brideText").textContent = d.bride;
+    $("groomParents").textContent = d.groomParents || "";
+    $("brideParents").textContent = d.brideParents || "";
+
+    $("akadInfo").textContent = `${d.date} • ${d.akadTime}`;
+    $("resepsiInfo").textContent = `${d.date} • ${d.resepsiTime}`;
+
+    $("storyText").textContent = d.story || "";
+
+    if ($("mapEmbed")) {
+      $("mapEmbed").src =
+        "https://www.google.com/maps?q=" +
+        encodeURIComponent(d.location) +
+        "&output=embed";
+    }
+
+    startCountdown(d.date);
+    renderGallery(d.photos || []);
+    setupMusic(d.music || "wedding1.mp3");
+
+    window.currentInviteId = id;
+    loadGuestbook(id);
+  } catch {
     toast("Undangan tidak ditemukan", false);
   }
 }
 
-function renderInvite(d) {
-  currentInviteId = d.id;
+/* ======================================================
+   COUNTDOWN
+====================================================== */
+function startCountdown(dateStr) {
+  const target = new Date(dateStr).getTime();
+  setInterval(() => {
+    const diff = target - Date.now();
+    if (diff < 0) return;
 
-  $("#heroNames") && ($("#heroNames").textContent = `${d.groom} & ${d.bride}`);
-  $("#heroDate") && ($("#heroDate").textContent = d.date);
-
-  $("#groomText") && ($("#groomText").textContent = d.groom);
-  $("#brideText") && ($("#brideText").textContent = d.bride);
-
-  $("#storyText") && ($("#storyText").textContent = d.story || "");
-
-  if ($("#mapEmbed") && d.maps) $("#mapEmbed").src = d.maps;
-
-  if (d.music) chooseMusic(d.music);
-
-  startCountdown(d.date);
-
-  renderGallery(d.photos || []);
+    $("cd-days").textContent = Math.floor(diff / (1000 * 60 * 60 * 24));
+    $("cd-hours").textContent = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    $("cd-mins").textContent = Math.floor((diff / (1000 * 60)) % 60);
+    $("cd-secs").textContent = Math.floor((diff / 1000) % 60);
+  }, 1000);
 }
 
-/* =========================================================
-   PHOTOS (URL ONLY – TANPA R2)
-========================================================= */
-function collectPhotoUrls() {
-  return Array.from($$(".photo-url"))
-    .map((i) => i.value.trim())
-    .filter(Boolean);
-}
-
+/* ======================================================
+   GALLERY
+====================================================== */
 function renderGallery(list) {
-  const wrap = $("#gallery");
-  if (!wrap) return;
-  wrap.innerHTML = "";
+  const g = $("gallery");
+  if (!g) return;
+  g.innerHTML = "";
   list.forEach((src) => {
     const img = document.createElement("img");
     img.src = src;
-    img.alt = "gallery";
-    img.addEventListener("click", () => openLightbox(src));
-    wrap.appendChild(img);
+    g.appendChild(img);
   });
 }
 
-/* =========================================================
-   LIGHTBOX
-========================================================= */
-function initLightbox() {
-  const lb = $("#lightbox");
-  if (!lb) return;
-  lb.addEventListener("click", () => (lb.style.display = "none"));
-}
-function openLightbox(src) {
-  const lb = $("#lightbox");
-  const img = $("#lightboxImg");
-  if (!lb || !img) return;
-  img.src = src;
-  lb.style.display = "flex";
+/* ======================================================
+   MUSIC
+====================================================== */
+function setupMusic(src) {
+  const m = $("music");
+  if (!m) return;
+  m.src = src;
 }
 
-/* =========================================================
-   SCROLL REVEAL
-========================================================= */
-function initReveal() {
-  const obs = new IntersectionObserver(
-    (ents) => ents.forEach((e) => e.isIntersecting && e.target.classList.add("show")),
-    { threshold: 0.15 }
-  );
-  $$(".fade").forEach((el) => obs.observe(el));
+function openInvitation() {
+  document.getElementById("content").scrollIntoView({ behavior: "smooth" });
+  const m = $("music");
+  if (m) m.play().catch(() => {});
 }
 
-/* =========================================================
-   GUESTBOOK (REALTIME via Worker)
-========================================================= */
+/* ======================================================
+   GUESTBOOK
+====================================================== */
 function initGuestbook() {
-  const form = $("#guestForm");
+  const form = $("guestForm");
   if (!form) return;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (!currentInviteId) return toast("Undangan belum dimuat", false);
+    const id = window.currentInviteId;
+    if (!id) return;
 
-    const name = $("#gbName")?.value?.trim();
-    const msg = $("#gbMsg")?.value?.trim();
-    if (!name || !msg) return toast("Lengkapi nama & pesan", false);
+    const name = $("gbName").value.trim();
+    const message = $("gbMsg").value.trim();
+    const hadir = $("gbHadir").value;
 
-    try {
-      const res = await fetch(`${API_BASE}/guestbook`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ inviteId: currentInviteId, name, msg })
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json?.error || "Guestbook error");
+    if (!name || !message) return toast("Isi nama & pesan", false);
 
-      $("#gbName").value = "";
-      $("#gbMsg").value = "";
-      toast("Pesan terkirim");
-      loadGuestbook(currentInviteId);
-    } catch (e) {
-      toast("Gagal kirim pesan", false);
-    }
+    await fetch(API_BASE + "/guestbook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inviteId: id, name, message, hadir })
+    });
+
+    $("gbName").value = "";
+    $("gbMsg").value = "";
+    loadGuestbook(id);
   });
-
-  // initial load
-  if (currentInviteId) loadGuestbook(currentInviteId);
 }
 
-async function loadGuestbook(inviteId) {
-  try {
-    const res = await fetch(`${API_BASE}/guestbook?inviteId=${encodeURIComponent(inviteId)}`);
-    const json = await res.json();
-    if (!res.ok) throw new Error();
+async function loadGuestbook(id) {
+  const res = await fetch(API_BASE + "/guestbook?inviteId=" + id);
+  const data = await res.json();
 
-    const wrap = $("#guestList");
-    if (!wrap) return;
-    wrap.innerHTML = "";
-    (json.items || []).forEach((it) => {
-      const d = document.createElement("div");
-      d.className = "guest-item";
-      d.innerHTML = `<b>${it.name}</b><p>${it.msg}</p>`;
-      wrap.appendChild(d);
-    });
-  } catch {}
+  const wrap = $("guestList");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+
+  data.items.forEach((g) => {
+    const div = document.createElement("div");
+    div.className = "guest-item";
+    div.innerHTML = `<b>${g.name}</b><p>${g.message}</p>`;
+    wrap.appendChild(div);
+  });
 }
