@@ -68,10 +68,8 @@ function compressToBase64(file, maxWidth = 900, quality = 0.78) {
       const canvas = document.createElement("canvas");
       canvas.width = img.width * scale;
       canvas.height = img.height * scale;
-
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
       resolve(canvas.toDataURL("image/jpeg", quality));
     };
     img.onerror = () => resolve("");
@@ -80,7 +78,7 @@ function compressToBase64(file, maxWidth = 900, quality = 0.78) {
 }
 
 /* ======================================================
-   AI GENERATE
+   AI GENERATE (POST ROOT ✔)
 ====================================================== */
 async function generateAI() {
   const input = getVal("aiText");
@@ -101,6 +99,7 @@ async function generateAI() {
     });
 
     const json = await res.json();
+
     if (!json?.success || !json?.data) {
       if (hint) hint.textContent = "❌ Gagal generate undangan.";
       return;
@@ -108,7 +107,6 @@ async function generateAI() {
 
     const d = json.data;
 
-    // === Autofill form ===
     setVal("groomName", d.groom);
     setVal("brideName", d.bride);
 
@@ -130,14 +128,14 @@ async function generateAI() {
     setVal("mapsQuery", d.maps_query);
     setVal("story", d.story);
 
-    if (hint) hint.textContent = "✅ Berhasil! Silakan cek & simpan undangan.";
+    if (hint) hint.textContent = "✅ Berhasil! Cek lalu simpan.";
   } catch (err) {
-    if (hint) hint.textContent = "❌ Error saat memanggil AI.";
+    if (hint) hint.textContent = "❌ Error saat generate AI.";
   }
 }
 
 /* ======================================================
-   SAVE INVITE TO WORKER (KV)
+   SAVE INVITE (POST ROOT ✔)
 ====================================================== */
 async function saveInvite() {
   const status = document.getElementById("saveHint");
@@ -181,22 +179,23 @@ async function saveInvite() {
   };
 
   try {
-    const res = await fetch(`${WORKER_API}/invites`, {
+    const res = await fetch(WORKER_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
     const json = await res.json();
+
     if (!json?.id) {
       if (status) status.textContent = "❌ Gagal menyimpan.";
       return;
     }
 
-    if (status) status.textContent = "✅ Undangan siap dibuka.";
+    if (status) status.textContent = "✅ Undangan berhasil dibuat!";
     window.location.href = `undangan.html?id=${encodeURIComponent(json.id)}`;
   } catch (err) {
-    if (status) status.textContent = "❌ Terjadi kesalahan.";
+    if (status) status.textContent = "❌ Terjadi kesalahan server.";
   }
 }
 
@@ -215,7 +214,6 @@ function setVal(id, value) {
 
 function setParents(type, text) {
   if (!text) return;
-  // Expected: "Putra dari Bapak A & Ibu B"
   const match = text.match(/Bapak\s+(.*?)\s+&\s+Ibu\s+(.*)/i);
   if (!match) return;
 
