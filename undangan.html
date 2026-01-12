@@ -1,198 +1,228 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Undangan Pernikahan</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Undangan Pernikahan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{margin:0;font-family:Georgia,serif;background:#faf7f2;color:#333;text-align:center}
+.hidden{display:none}
 
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: radial-gradient(circle at top,#111,#000);
-      color: #fff;
-      text-align: center;
-      overflow-x: hidden;
-    }
+/* OPENING */
+.overlay{
+  position:fixed;inset:0;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;z-index:9999
+}
+.envelope{
+  width:120px;height:120px;border-radius:20px;
+  background:#c1121f;display:flex;
+  align-items:center;justify-content:center;
+  font-size:50px;cursor:pointer;
+  animation:pulse 1.5s infinite
+}
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.1)}
+  100%{transform:scale(1)}
+}
 
-    .section {
-      padding: 40px 20px;
-      animation: fadeUp 1s ease;
-    }
+/* COVER */
+.cover{padding:60px 20px;background:linear-gradient(160deg,#e9d8a6,#fff)}
+.cover img{
+  width:180px;height:180px;
+  object-fit:cover;border-radius:50%;
+  margin-bottom:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,.3)
+}
+.section{padding:40px 20px}
+.fade{opacity:0;transform:translateY(20px);transition:.8s}
+.fade.show{opacity:1;transform:none}
+.ai{white-space:pre-line;line-height:1.7}
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+/* MAP */
+iframe{width:100%;height:300px;border:0;border-radius:12px}
 
-    h1 {
-      color: #ff4d4d;
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
+/* UCAPAN */
+input,textarea{
+  width:100%;padding:12px;border-radius:8px;
+  border:1px solid #ccc;margin-top:10px
+}
+button{
+  padding:12px 18px;border:none;border-radius:8px;
+  background:#c1121f;color:#fff;margin-top:10px
+}
+.ucapan{
+  background:#fff;padding:10px;border-radius:8px;
+  margin-top:10px;text-align:left
+}
 
-    h2 {
-      font-weight: normal;
-      color: #ccc;
-      margin-bottom: 20px;
-    }
+/* MUSIC */
+.music-btn{
+  position:fixed;bottom:20px;right:20px;
+  width:56px;height:56px;border-radius:50%;
+  background:#c1121f;color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;z-index:999
+}
+.music-info{
+  position:fixed;bottom:85px;right:15px;
+  background:#fff;color:#333;
+  padding:8px 12px;border-radius:10px;
+  font-size:12px
+}
 
-    .photo {
-      width: 160px;
-      height: 160px;
-      margin: auto;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 4px solid #ff4d4d;
-      box-shadow: 0 0 25px rgba(255,77,77,.4);
-    }
-
-    .photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .card {
-      background: #0d0d0d;
-      border-radius: 16px;
-      padding: 20px;
-      margin: 20px auto;
-      max-width: 500px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.6);
-      text-align: left;
-      white-space: pre-wrap;
-      line-height: 1.6;
-    }
-
-    iframe {
-      width: 100%;
-      height: 250px;
-      border-radius: 14px;
-      border: none;
-      margin-top: 10px;
-    }
-
-    input, textarea, button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-
-    textarea { resize: none; }
-
-    button {
-      background: linear-gradient(135deg,#ff4d4d,#ff0000);
-      color: #fff;
-      cursor: pointer;
-    }
-
-    .footer {
-      font-size: 12px;
-      color: #777;
-      margin-bottom: 20px;
-    }
-
-    audio { display: none; }
-
-    .play {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background: #ff4d4d;
-      border-radius: 50%;
-      width: 54px;
-      height: 54px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      cursor: pointer;
-      box-shadow: 0 8px 20px rgba(255,77,77,.6);
-    }
-  </style>
+/* WATERMARK */
+.watermark{
+  position:fixed;bottom:8px;left:50%;
+  transform:translateX(-50%);
+  font-size:11px;color:#999;opacity:.7
+}
+</style>
 </head>
+
 <body>
 
-<!-- MUSIK -->
-<audio id="musik" loop>
-  <source src="musik/wedding.mp3" type="audio/mpeg">
-</audio>
-<div class="play" onclick="toggleMusic()">🎵</div>
-
-<!-- PEMBUKA -->
-<div class="section">
-  <h2>Undangan Pernikahan</h2>
-  <h1 id="namaMempelai">Mempelai</h1>
-
-  <div class="photo">
-    <img id="fotoMempelai" src="" alt="Foto Mempelai">
-  </div>
+<div class="overlay" id="open">
+  <div class="envelope" onclick="mulai()">✉️</div>
+  <p>Klik amplop untuk membuka undangan</p>
 </div>
 
-<!-- ISI UNDANGAN -->
-<div class="section">
-  <div class="card" id="teksUndangan">
-    Memuat undangan...
-  </div>
+<audio id="audio" loop></audio>
+<div class="music-btn" onclick="toggle()">🎵</div>
+<div class="music-info" id="musicTitle"></div>
+
+<div id="konten" class="hidden">
+
+<div class="cover fade">
+  <img id="foto" style="display:none">
+  <h1 id="nama"></h1>
+  <p id="tanggal"></p>
 </div>
 
-<!-- LOKASI -->
-<div class="section">
-  <h2>Lokasi Acara</h2>
+<div class="section fade">
+  <h3>Menuju Hari Bahagia</h3>
+  <div id="countdown"></div>
+</div>
+
+<div class="section fade">
+  <div class="ai" id="aiText"></div>
+</div>
+
+<div class="section fade">
+  <h3>Lokasi Acara</h3>
+  <p id="alamat"></p>
   <iframe id="maps"></iframe>
 </div>
 
-<!-- UCAPAN -->
-<div class="section">
-  <h2>Ucapan & Doa</h2>
-  <div class="card">
-    <input id="namaUcapan" placeholder="Nama kamu">
-    <textarea id="isiUcapan" rows="3" placeholder="Tulis ucapan..."></textarea>
-    <button onclick="kirimUcapan()">Kirim Ucapan</button>
-  </div>
-
-  <div class="card" id="listUcapan"></div>
+<div class="section fade">
+  <button onclick="shareWA()" style="width:100%">📲 Bagikan via WhatsApp</button>
 </div>
 
-<div class="footer">
-  © EtaWeb – Undangan Online
+<div class="section fade">
+  <h3>Ucapan & Doa</h3>
+  <input id="namaUcapan" placeholder="Nama Anda">
+  <textarea id="isiUcapan" placeholder="Tulis ucapan"></textarea>
+  <button onclick="kirim()">Kirim Ucapan</button>
+  <div id="list"></div>
+</div>
+
+<div class="watermark">Dibuat dengan ❤️ oleh <b>EtaWeb</b></div>
+
 </div>
 
 <script>
-/* === AMBIL DATA DARI INDEX === */
-const data = JSON.parse(localStorage.getItem("undanganAI"));
+const q=new URLSearchParams(location.search);
+const p=q.get("p"),w=q.get("w"),t=q.get("t"),
+      a=q.get("a"),m=q.get("m"),g=q.get("g");
 
-if (data) {
-  document.getElementById("namaMempelai").innerText = data.nama || "Mempelai";
-  document.getElementById("teksUndangan").innerText = data.teks || "";
-  document.getElementById("fotoMempelai").src = data.foto || "";
-  document.getElementById("maps").src =
-    "https://www.google.com/maps?q=" + encodeURIComponent(data.lokasi) + "&output=embed";
+nama.innerText=p+" & "+w;
+tanggal.innerText=t;
+alamat.innerText=a;
+maps.src=m.replace("watch?v=","embed/");
+aiText.innerText=localStorage.getItem("ai_text")||"";
+
+const fotoData=localStorage.getItem("foto");
+if(fotoData){foto.src=fotoData;foto.style.display="inline-block"}
+
+const audio=document.getElementById("audio");
+audio.src=g;
+
+const musicMap={
+  "musik/wedding1.mp3":"You're Still The One – Shania Twain",
+  "musik/wedding2.mp3":"Pilihanku – MALIQ & D'Essentials",
+  "musik/wedding3.mp3":"Beautiful In White – Shane Filan"
+};
+musicTitle.innerText="🎵 "+(musicMap[g]||"Lagu Pernikahan");
+
+function mulai(){
+  open.style.display="none";
+  konten.classList.remove("hidden");
+  audio.play().catch(()=>{});
+  document.querySelectorAll(".fade").forEach((el,i)=>{
+    setTimeout(()=>el.classList.add("show"),i*200);
+  });
+  startCountdown(t);
+}
+function toggle(){audio.paused?audio.play():audio.pause()}
+
+// COUNTDOWN
+function startCountdown(date){
+  const target=new Date(date).getTime();
+  setInterval(()=>{
+    const now=new Date().getTime();
+    const d=target-now;
+    if(d<=0){countdown.innerText="Hari ini hari bahagia 💍";return;}
+    const h=Math.floor(d/(1000*60*60*24));
+    const j=Math.floor(d/(1000*60*60)%24);
+    const m=Math.floor(d/(1000*60)%60);
+    const s=Math.floor(d/1000%60);
+    countdown.innerText=`${h} Hari • ${j} Jam • ${m} Menit • ${s} Detik`;
+  },1000);
 }
 
-/* === MUSIK === */
-const musik = document.getElementById("musik");
-let play = false;
-function toggleMusic() {
-  play ? musik.pause() : musik.play();
-  play = !play;
+// SHARE WA
+function shareWA(){
+  const link=location.href;
+  const text=`Assalamu’alaikum 🙏
+
+Kami mengundang Bapak/Ibu/Saudara/i
+untuk menghadiri pernikahan kami:
+
+${p} & ${w}
+📅 ${t}
+📍 ${a}
+
+Silakan buka undangan:
+${link}`;
+  window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank");
 }
 
-/* === UCAPAN === */
-function kirimUcapan() {
-  const nama = namaUcapan.value;
-  const isi = isiUcapan.value;
-  if (!nama || !isi) return alert("Lengkapi ucapan");
+// UCAPAN
+const key="ucapan_"+location.search;
+const list=document.getElementById("list");
+function render(){
+  list.innerHTML="";
+  const data=JSON.parse(localStorage.getItem(key)||"[]");
+  data.forEach(u=>{
+    const d=document.createElement("div");
+    d.className="ucapan";
+    d.innerHTML="<strong>"+u.n+"</strong><br>"+u.i;
+    list.appendChild(d);
+  });
+}
+render();
 
-  const list = document.getElementById("listUcapan");
-  list.innerHTML += `<p><b>${nama}</b><br>${isi}</p><hr>`;
-  namaUcapan.value = "";
-  isiUcapan.value = "";
+function kirim(){
+  const n=namaUcapan.value.trim();
+  const i=isiUcapan.value.trim();
+  if(!n||!i)return;
+  const data=JSON.parse(localStorage.getItem(key)||"[]");
+  data.push({n,i});
+  localStorage.setItem(key,JSON.stringify(data));
+  namaUcapan.value="";isiUcapan.value="";
+  render();
 }
 </script>
 
