@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Undangan Pernikahan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: radial-gradient(circle at top,#111,#000);
+      color: #fff;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    .section {
+      padding: 40px 20px;
+      animation: fadeUp 1s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      color: #ff4d4d;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-weight: normal;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .photo {
+      width: 160px;
+      height: 160px;
+      margin: auto;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid #ff4d4d;
+      box-shadow: 0 0 25px rgba(255,77,77,.4);
+    }
+
+    .photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .card {
+      background: #0d0d0d;
+      border-radius: 16px;
+      padding: 20px;
+      margin: 20px auto;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.6);
+      text-align: left;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    iframe {
+      width: 100%;
+      height: 250px;
+      border-radius: 14px;
+      border: none;
+      margin-top: 10px;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    textarea { resize: none; }
+
+    button {
+      background: linear-gradient(135deg,#ff4d4d,#ff0000);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .footer {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 20px;
+    }
+
+    audio { display: none; }
+
+    .play {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #ff4d4d;
+      border-radius: 50%;
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(255,77,77,.6);
+    }
+  </style>
+</head>
+<body>
+
+<!-- MUSIK -->
+<audio id="musik" loop>
+  <source src="musik/wedding.mp3" type="audio/mpeg">
+</audio>
+<div class="play" onclick="toggleMusic()">🎵</div>
+
+<!-- PEMBUKA -->
+<div class="section">
+  <h2>Undangan Pernikahan</h2>
+  <h1 id="namaMempelai">Mempelai</h1>
+
+  <div class="photo">
+    <img id="fotoMempelai" src="" alt="Foto Mempelai">
+  </div>
+</div>
+
+<!-- ISI UNDANGAN -->
+<div class="section">
+  <div class="card" id="teksUndangan">
+    Memuat undangan...
+  </div>
+</div>
+
+<!-- LOKASI -->
+<div class="section">
+  <h2>Lokasi Acara</h2>
+  <iframe id="maps"></iframe>
+</div>
+
+<!-- UCAPAN -->
+<div class="section">
+  <h2>Ucapan & Doa</h2>
+  <div class="card">
+    <input id="namaUcapan" placeholder="Nama kamu">
+    <textarea id="isiUcapan" rows="3" placeholder="Tulis ucapan..."></textarea>
+    <button onclick="kirimUcapan()">Kirim Ucapan</button>
+  </div>
+
+  <div class="card" id="listUcapan"></div>
+</div>
+
+<div class="footer">
+  © EtaWeb – Undangan Online
+</div>
+
+<script>
+/* === AMBIL DATA DARI INDEX === */
+const data = JSON.parse(localStorage.getItem("undanganAI"));
+
+if (data) {
+  document.getElementById("namaMempelai").innerText = data.nama || "Mempelai";
+  document.getElementById("teksUndangan").innerText = data.teks || "";
+  document.getElementById("fotoMempelai").src = data.foto || "";
+  document.getElementById("maps").src =
+    "https://www.google.com/maps?q=" + encodeURIComponent(data.lokasi) + "&output=embed";
+}
+
+/* === MUSIK === */
+const musik = document.getElementById("musik");
+let play = false;
+function toggleMusic() {
+  play ? musik.pause() : musik.play();
+  play = !play;
+}
+
+/* === UCAPAN === */
+function kirimUcapan() {
+  const nama = namaUcapan.value;
+  const isi = isiUcapan.value;
+  if (!nama || !isi) return alert("Lengkapi ucapan");
+
+  const list = document.getElementById("listUcapan");
+  list.innerHTML += `<p><b>${nama}</b><br>${isi}</p><hr>`;
+  namaUcapan.value = "";
+  isiUcapan.value = "";
+}
+</script>
+
+</body>
+</html>
