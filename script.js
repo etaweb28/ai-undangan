@@ -1,358 +1,281 @@
-/* =============================
+/* =====================================================
    CONFIG
-============================= */
-const API = "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev";
+===================================================== */
+const API_URL =
+  "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev";
 
-/* =============================
-   STATE
-============================= */
 let currentInvite = null;
 let currentMusic = "wedding1.mp3";
-let countdownTimer = null;
 
-/* =============================
+/* =====================================================
    INIT
-============================= */
-window.addEventListener("load", () => {
-  setTimeout(() => loader.style.display = "none", 800);
-  initReveal();
+===================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  const loader = document.getElementById("loader");
+  if (loader) {
+    setTimeout(() => (loader.style.display = "none"), 800);
+  }
+
   initGalleryLightbox();
   initGuestbookDummy();
-  bootFromQueryId();
 });
 
-/* =============================
-   HERO + MUSIC
-============================= */
+/* =====================================================
+   MUSIC CONTROLLER
+===================================================== */
 const music = document.getElementById("music");
 
 function openInvitation() {
-  document.getElementById("content")
-    .scrollIntoView({ behavior: "smooth" });
-  playMusicSafe();
+  document.getElementById("content").scrollIntoView({ behavior: "smooth" });
+  playMusic();
 }
 
-function playMusicSafe() {
+function playMusic() {
+  if (!music) return;
+  music.src = currentMusic;
   music.play().catch(() => {});
 }
 
 function toggleMusic() {
-  music.paused ? music.play().catch(() => {}) : music.pause();
+  if (!music) return;
+  if (music.paused) music.play();
+  else music.pause();
 }
 
-/* =============================
-   BOTTOM SHEET
-============================= */
+function chooseMusic(file) {
+  currentMusic = file;
+  playMusic();
+}
+
+/* =====================================================
+   BOTTOM SHEET (AMPL0P ANIMATION)
+===================================================== */
 function openSheet() {
-  sheet.classList.add("open");
+  document.body.classList.add("open");
 }
+
 function closeSheet() {
-  sheet.classList.remove("open");
+  document.body.classList.remove("open");
 }
 
-/* =============================
+/* =====================================================
    SCROLL REVEAL
-============================= */
-function initReveal() {
-  const els = document.querySelectorAll(".fade");
-  const io = new IntersectionObserver(
-    entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) e.target.classList.add("show");
-      });
-    },
-    { threshold: 0.12 }
-  );
-  els.forEach(el => io.observe(el));
-}
+===================================================== */
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) e.target.classList.add("show");
+    });
+  },
+  { threshold: 0.2 }
+);
 
-/* =============================
-   LIGHTBOX
-============================= */
+document.querySelectorAll(".fade").forEach((el) => observer.observe(el));
+
+/* =====================================================
+   GALLERY + LIGHTBOX
+===================================================== */
 function initGalleryLightbox() {
-  document.querySelectorAll("#gallery img").forEach(img => {
-    img.onclick = () => openLightbox(img.src);
+  document.querySelectorAll(".gallery img").forEach((img) => {
+    img.addEventListener("click", () => openLightbox(img.src));
   });
 }
+
 function openLightbox(src) {
-  lightbox.style.display = "flex";
-  lightboxImg.src = src;
-}
-function closeLightbox() {
-  lightbox.style.display = "none";
-  lightboxImg.src = "";
+  const lb = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lightbox-img");
+  if (!lb || !lbImg) return;
+
+  lbImg.src = src;
+  lb.style.display = "flex";
 }
 
-/* =============================
+function closeLightbox() {
+  document.getElementById("lightbox").style.display = "none";
+}
+
+/* =====================================================
    GUESTBOOK (DUMMY FRONTEND)
-============================= */
+===================================================== */
 function initGuestbookDummy() {
-  guestForm.addEventListener("submit", e => {
+  const form = document.getElementById("guestForm");
+  if (!form) return;
+
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const name = guestName.value.trim();
-    const msg = guestMsg.value.trim();
-    const att = guestAttend.value;
+    const name = document.getElementById("guestName").value;
+    const msg = document.getElementById("guestMsg").value;
+
     if (!name || !msg) return;
 
+    const list = document.getElementById("guestList");
     const div = document.createElement("div");
-    div.className = "gItem";
-    div.innerHTML =
-      `<strong>${escapeHtml(name)}</strong> ` +
-      `<span style="color:#999">• ${escapeHtml(att)}</span><br>` +
-      `${escapeHtml(msg)}`;
-    guestPreview.prepend(div);
+    div.className = "guest-item";
+    div.innerHTML = `<b>${escapeHtml(name)}</b><br>${escapeHtml(msg)}`;
 
-    guestForm.querySelector("button").innerHTML = "Terkirim ✅";
-    setTimeout(() => {
-      guestForm.querySelector("button").innerHTML =
-        `<i class="fa-solid fa-paper-plane"></i> Kirim`;
-    }, 900);
-
-    guestName.value = "";
-    guestMsg.value = "";
-    guestAttend.value = "Hadir";
+    list.prepend(div);
+    form.reset();
   });
 }
 
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({
+/* =====================================================
+   IMAGE UPLOAD + COMPRESS
+===================================================== */
+async function compressImage(file, maxW = 900, quality = 0.78) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxW / img.width);
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/* =====================================================
+   GOOGLE MAPS HELPER
+===================================================== */
+function mapEmbed(q) {
+  return (
+    "https://www.google.com/maps?q=" +
+    encodeURIComponent(q || "Indonesia") +
+    "&output=embed"
+  );
+}
+
+function mapOpen(q) {
+  return (
+    "https://www.google.com/maps/search/?api=1&query=" +
+    encodeURIComponent(q || "Indonesia")
+  );
+}
+
+/* =====================================================
+   AI GENERATE INVITATION
+===================================================== */
+async function generateAndPreview() {
+  const text = document.getElementById("inputText").value.trim();
+  if (!text) return showToast("Isi prompt dulu");
+
+  showHint("⏳ Generate AI...");
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+
+  const data = await res.json();
+  if (!data.result) return showToast("Gagal generate");
+
+  currentInvite = data.invite || {};
+  showHint("✅ Berhasil dibuat");
+}
+
+/* =====================================================
+   APPLY DATA TO UNDANGAN
+===================================================== */
+function applyInviteToUI(inv) {
+  document.getElementById("heroName").textContent =
+    `${inv.groom || "Namamu"} & ${inv.bride || "Pasanganmu"}`;
+
+  document.getElementById("heroDate").textContent =
+    inv.date || "Tanggal Pernikahan";
+
+  document.getElementById("story").textContent =
+    inv.story || "Kisah cinta penuh makna.";
+
+  document.getElementById("mapFrame").src =
+    mapEmbed(inv.location);
+
+  document.getElementById("openMap").onclick = () =>
+    window.open(mapOpen(inv.location), "_blank");
+
+  startCountdown(inv.dateTime);
+}
+
+/* =====================================================
+   COUNTDOWN
+===================================================== */
+function startCountdown(dateStr) {
+  const target = new Date(dateStr).getTime();
+  setInterval(() => {
+    const now = Date.now();
+    const diff = target - now;
+    if (diff <= 0) return;
+
+    document.getElementById("cd-days").textContent =
+      Math.floor(diff / 86400000);
+    document.getElementById("cd-hours").textContent =
+      Math.floor(diff / 3600000) % 24;
+    document.getElementById("cd-mins").textContent =
+      Math.floor(diff / 60000) % 60;
+    document.getElementById("cd-secs").textContent =
+      Math.floor(diff / 1000) % 60;
+  }, 1000);
+}
+
+/* =====================================================
+   SAVE + LOAD INVITE (WORKER KV)
+===================================================== */
+async function saveInviteToWorker(payload) {
+  await fetch(API_URL + "/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+}
+
+async function loadInviteFromQuery() {
+  const id = new URLSearchParams(location.search).get("id");
+  if (!id) return;
+
+  const res = await fetch(API_URL + "?id=" + id);
+  const data = await res.json();
+
+  if (data.invite) {
+    currentInvite = data.invite;
+    applyInviteToUI(currentInvite);
+  }
+}
+
+/* =====================================================
+   SHARE WHATSAPP
+===================================================== */
+function shareWA() {
+  const url = location.href;
+  window.open(
+    "https://wa.me/?text=" + encodeURIComponent("Undangan Pernikahan:\n" + url)
+  );
+}
+
+/* =====================================================
+   UTIL
+===================================================== */
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, (m) => ({
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
-    "'": "&#039;"
-  }[c]));
+    "'": "&#039;",
+  })[m]);
 }
 
-/* =============================
-   IMAGE COMPRESS
-============================= */
-async function fileToSmallDataURL(file, maxW = 900, quality = 0.78) {
-  const img = await new Promise((res, rej) => {
-    const i = new Image();
-    i.onload = () => res(i);
-    i.onerror = rej;
-    i.src = URL.createObjectURL(file);
-  });
-
-  const scale = Math.min(1, maxW / img.width);
-  const w = Math.round(img.width * scale);
-  const h = Math.round(img.height * scale);
-
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-
-  return canvas.toDataURL("image/jpeg", quality);
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  setTimeout(() => (t.style.display = "none"), 1600);
 }
 
-/* =============================
-   MAP HELPERS
-============================= */
-function mapToEmbed(q) {
-  return "https://www.google.com/maps?q=" +
-    encodeURIComponent(q || "Indonesia") + "&output=embed";
-}
-function mapToOpen(q) {
-  return "https://www.google.com/maps?q=" +
-    encodeURIComponent(q || "Indonesia");
-}
-
-/* =============================
-   AI GENERATE
-============================= */
-async function generateAndPreview() {
-  const text = prompt.value.trim();
-  if (!text) {
-    sheetHint.textContent = "Isi prompt dulu.";
-    return;
-  }
-
-  sheetHint.textContent = "⏳ Generate AI…";
-
-  // set music
-  currentMusic = musicSelect.value;
-  musicSource.src = currentMusic;
-  music.load();
-
-  const res = await fetch(API + "/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text })
-  });
-
-  const data = await res.json();
-  if (!data.success) {
-    sheetHint.textContent = "❌ AI gagal.";
-    return;
-  }
-
-  let inv = data.invite || {};
-
-  // overrides
-  if (groomOverride.value) inv.groom = groomOverride.value;
-  if (brideOverride.value) inv.bride = brideOverride.value;
-  if (dateOverride.value) inv.date = dateOverride.value;
-  if (akadOverride.value)
-    inv.akad_time = `Akad: ${akadOverride.value}`;
-  if (resepsiOverride.value)
-    inv.resepsi_time = `Resepsi: ${resepsiOverride.value}`;
-  if (venueOverride.value) inv.venue = venueOverride.value;
-  if (mapsOverride.value) inv.maps_query = mapsOverride.value;
-
-  inv.maps_query =
-    inv.maps_query || inv.address || inv.venue || "Indonesia";
-
-  inv.full_text = inv.full_text || "";
-
-  currentInvite = inv;
-  applyInviteToUI(inv);
-
-  sheetHint.textContent = "✅ Berhasil dibuat!";
-}
-
-/* =============================
-   APPLY DATA TO UI
-============================= */
-function applyInviteToUI(inv) {
-  const groom = inv.groom || "(Namamu)";
-  const bride = inv.bride || "(Nama Pasanganmu)";
-  const date = inv.date || "Tanggal Acara";
-
-  heroNames.textContent = `${groom} & ${bride}`;
-  heroDate.textContent = date;
-  groomName.textContent = groom;
-  brideName.textContent = bride;
-  footerNames.textContent = `${groom} & ${bride}`;
-
-  akadInfo.textContent =
-    `${date}\n${inv.akad_time || ""}\n${inv.venue || ""}`;
-  resepsiInfo.textContent =
-    `${date}\n${inv.resepsi_time || ""}\n${inv.venue || ""}`;
-
-  locText.textContent = "📍 " + inv.maps_query;
-  map.src = mapToEmbed(inv.maps_query);
-  openMapsBtn.href = mapToOpen(inv.maps_query);
-
-  startCountdown(inv.date);
-
-  document.getElementById("content")
-    .scrollIntoView({ behavior: "smooth" });
-}
-
-/* =============================
-   COUNTDOWN
-============================= */
-function startCountdown(dateStr) {
-  const dObj = new Date(dateStr);
-  if (isNaN(dObj)) return;
-
-  const target = dObj.getTime();
-  clearInterval(countdownTimer);
-  countdownTimer = setInterval(() => {
-    const diff = target - Date.now();
-    if (diff <= 0) return;
-
-    d.textContent = Math.floor(diff / 86400000);
-    h.textContent = Math.floor(diff / 3600000) % 24;
-    m.textContent = Math.floor(diff / 60000) % 60;
-    s.textContent = Math.floor(diff / 1000) % 60;
-  }, 1000);
-}
-
-/* =============================
-   SAVE TO KV
-============================= */
-async function saveToKVAndMakeLink() {
-  if (!currentInvite) {
-    sheetHint.textContent = "Generate dulu.";
-    return;
-  }
-
-  sheetHint.textContent = "⏳ Menyimpan…";
-
-  const photos = {};
-  if (groomPhoto.files[0])
-    photos.groom = await fileToSmallDataURL(groomPhoto.files[0]);
-  if (bridePhoto.files[0])
-    photos.bride = await fileToSmallDataURL(bridePhoto.files[0]);
-
-  if (galleryPhotos.files.length) {
-    photos.gallery = [];
-    for (const f of [...galleryPhotos.files].slice(0, 10)) {
-      photos.gallery.push(await fileToSmallDataURL(f, 1100, 0.75));
-    }
-  }
-
-  const payload = {
-    invite: currentInvite,
-    aiText: currentInvite.full_text,
-    music: currentMusic,
-    photos
-  };
-
-  const res = await fetch(API + "/invite/save", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-
-  const data = await res.json();
-  if (!data.success) {
-    sheetHint.textContent = "❌ Gagal simpan.";
-    return;
-  }
-
-  const link =
-    location.origin + location.pathname + "?id=" + data.id;
-  await navigator.clipboard.writeText(link);
-  toastShow("Link undangan disalin ✅");
-
-  closeSheet();
-}
-
-/* =============================
-   LOAD FROM ?id=
-============================= */
-async function bootFromQueryId() {
-  const q = new URLSearchParams(location.search);
-  const id = q.get("id");
-  if (!id) return;
-
-  const res = await fetch(API + "/invite/get?id=" + id);
-  if (!res.ok) return;
-
-  const data = await res.json();
-  currentInvite = data.invite;
-  currentMusic = data.music || "wedding1.mp3";
-
-  musicSource.src = currentMusic;
-  music.load();
-
-  if (currentInvite) applyInviteToUI(currentInvite);
-
-  const photos = data.photos || {};
-  if (photos.groom) groomImg.src = photos.groom;
-  if (photos.bride) brideImg.src = photos.bride;
-  if (photos.gallery?.length) {
-    gallery.innerHTML = "";
-    photos.gallery.forEach(src => {
-      const img = document.createElement("img");
-      img.src = src;
-      img.onclick = () => openLightbox(src);
-      gallery.appendChild(img);
-    });
-  }
-
-  toastShow("Undangan dimuat dari link ✅");
-}
-
-/* =============================
-   UTIL
-============================= */
-function toastShow(text) {
-  toast.textContent = text;
-  toast.style.display = "block";
-  setTimeout(() => (toast.style.display = "none"), 1600);
+function showHint(msg) {
+  document.getElementById("hint").textContent = msg;
 }
