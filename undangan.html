@@ -4,225 +4,120 @@
 <meta charset="UTF-8">
 <title>Undangan Pernikahan</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{margin:0;font-family:Georgia,serif;background:#faf7f2;color:#333;text-align:center}
-.hidden{display:none}
-
-/* OPENING */
-.overlay{
-  position:fixed;inset:0;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  color:#fff;display:flex;flex-direction:column;
-  justify-content:center;align-items:center;z-index:9999
+body{
+  margin:0;
+  font-family:Georgia,serif;
+  background:#111;
+  color:#fff;
+  line-height:1.6;
 }
-.envelope{
-  width:120px;height:120px;border-radius:20px;
-  background:#c1121f;display:flex;
-  align-items:center;justify-content:center;
-  font-size:50px;cursor:pointer;
-  animation:pulse 1.5s infinite
+.hero{
+  text-align:center;
+  padding:40px 20px;
+  background:linear-gradient(135deg,#8b0000,#ff4d4d);
 }
-@keyframes pulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.1)}
-  100%{transform:scale(1)}
+.section{
+  padding:25px 20px;
 }
-
-/* COVER */
-.cover{padding:60px 20px;background:linear-gradient(160deg,#e9d8a6,#fff)}
-.cover img{
-  width:180px;height:180px;
-  object-fit:cover;border-radius:50%;
+.card{
+  background:#1b1b1b;
+  border-radius:16px;
+  padding:20px;
   margin-bottom:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,.3)
 }
-.section{padding:40px 20px}
-.fade{opacity:0;transform:translateY(20px);transition:.8s}
-.fade.show{opacity:1;transform:none}
-.ai{white-space:pre-line;line-height:1.7}
-
-/* MAP */
-iframe{width:100%;height:300px;border:0;border-radius:12px}
-
-/* UCAPAN */
-input,textarea{
-  width:100%;padding:12px;border-radius:8px;
-  border:1px solid #ccc;margin-top:10px
+h2{
+  color:#ffb703;
+  text-align:center;
+}
+.map iframe{
+  width:100%;
+  border-radius:12px;
+}
+textarea,input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  margin-top:8px;
 }
 button{
-  padding:12px 18px;border:none;border-radius:8px;
-  background:#c1121f;color:#fff;margin-top:10px
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:#ff4d4d;
+  color:#fff;
+  border:none;
+  border-radius:12px;
 }
-.ucapan{
-  background:#fff;padding:10px;border-radius:8px;
-  margin-top:10px;text-align:left
-}
-
-/* MUSIC */
-.music-btn{
-  position:fixed;bottom:20px;right:20px;
-  width:56px;height:56px;border-radius:50%;
-  background:#c1121f;color:#fff;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;z-index:999
-}
-.music-info{
-  position:fixed;bottom:85px;right:15px;
-  background:#fff;color:#333;
-  padding:8px 12px;border-radius:10px;
-  font-size:12px
-}
-
-/* WATERMARK */
-.watermark{
-  position:fixed;bottom:8px;left:50%;
-  transform:translateX(-50%);
-  font-size:11px;color:#999;opacity:.7
+.footer{
+  text-align:center;
+  font-size:11px;
+  color:#888;
+  padding:15px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="overlay" id="open">
-  <div class="envelope" onclick="mulai()">✉️</div>
-  <p>Klik amplop untuk membuka undangan</p>
+<div class="hero">
+  <h1>Hilmi & Yanti</h1>
+  <p>12 Januari 2026</p>
+</div>
+
+<div class="section">
+  <div class="card">
+    <h2>Akad & Resepsi</h2>
+    <p>Gedung Sate<br>Bandung</p>
+  </div>
+
+  <div class="card map">
+    <iframe
+      src="https://www.google.com/maps?q=gedung%20sate&output=embed"
+      height="200"></iframe>
+  </div>
+
+  <div class="card">
+    <h2>Ucapan & Doa</h2>
+    <input id="nama" placeholder="Nama Anda">
+    <textarea id="pesan" rows="3" placeholder="Tulis ucapan"></textarea>
+    <button onclick="kirimUcapan()">Kirim</button>
+    <div id="listUcapan"></div>
+  </div>
 </div>
 
 <audio id="audio" loop></audio>
-<div class="music-btn" onclick="toggle()">🎵</div>
-<div class="music-info" id="musicTitle"></div>
 
-<div id="konten" class="hidden">
-
-<div class="cover fade">
-  <img id="foto" style="display:none">
-  <h1 id="nama"></h1>
-  <p id="tanggal"></p>
-</div>
-
-<div class="section fade">
-  <h3>Menuju Hari Bahagia</h3>
-  <div id="countdown"></div>
-</div>
-
-<div class="section fade">
-  <div class="ai" id="aiText"></div>
-</div>
-
-<div class="section fade">
-  <h3>Lokasi Acara</h3>
-  <p id="alamat"></p>
-  <iframe id="maps"></iframe>
-</div>
-
-<div class="section fade">
-  <button onclick="shareWA()" style="width:100%">📲 Bagikan via WhatsApp</button>
-</div>
-
-<div class="section fade">
-  <h3>Ucapan & Doa</h3>
-  <input id="namaUcapan" placeholder="Nama Anda">
-  <textarea id="isiUcapan" placeholder="Tulis ucapan"></textarea>
-  <button onclick="kirim()">Kirim Ucapan</button>
-  <div id="list"></div>
-</div>
-
-<div class="watermark">Dibuat dengan ❤️ oleh <b>EtaWeb</b></div>
-
+<div class="footer">
+  © EtaWeb – Wedding Invitation
 </div>
 
 <script>
-const q=new URLSearchParams(location.search);
-const p=q.get("p"),w=q.get("w"),t=q.get("t"),
-      a=q.get("a"),m=q.get("m"),g=q.get("g");
-
-nama.innerText=p+" & "+w;
-tanggal.innerText=t;
-alamat.innerText=a;
-maps.src=m.replace("watch?v=","embed/");
-aiText.innerText=localStorage.getItem("ai_text")||"";
-
-const fotoData=localStorage.getItem("foto");
-if(fotoData){foto.src=fotoData;foto.style.display="inline-block"}
+const params=new URLSearchParams(window.location.search);
+const music=params.get("music")||"wedding1.mp3";
 
 const audio=document.getElementById("audio");
-audio.src=g;
+audio.src="musik/"+music;
 
-const musicMap={
-  "musik/wedding1.mp3":"You're Still The One – Shania Twain",
-  "musik/wedding2.mp3":"Pilihanku – MALIQ & D'Essentials",
-  "musik/wedding3.mp3":"Beautiful In White – Shane Filan"
-};
-musicTitle.innerText="🎵 "+(musicMap[g]||"Lagu Pernikahan");
+// autoplay aman
+document.body.addEventListener("click",()=>{
+  audio.play();
+},{once:true});
 
-function mulai(){
-  open.style.display="none";
-  konten.classList.remove("hidden");
-  audio.play().catch(()=>{});
-  document.querySelectorAll(".fade").forEach((el,i)=>{
-    setTimeout(()=>el.classList.add("show"),i*200);
-  });
-  startCountdown(t);
-}
-function toggle(){audio.paused?audio.play():audio.pause()}
+function kirimUcapan(){
+  const n=document.getElementById("nama").value;
+  const p=document.getElementById("pesan").value;
+  if(!n||!p) return;
 
-// COUNTDOWN
-function startCountdown(date){
-  const target=new Date(date).getTime();
-  setInterval(()=>{
-    const now=new Date().getTime();
-    const d=target-now;
-    if(d<=0){countdown.innerText="Hari ini hari bahagia 💍";return;}
-    const h=Math.floor(d/(1000*60*60*24));
-    const j=Math.floor(d/(1000*60*60)%24);
-    const m=Math.floor(d/(1000*60)%60);
-    const s=Math.floor(d/1000%60);
-    countdown.innerText=`${h} Hari • ${j} Jam • ${m} Menit • ${s} Detik`;
-  },1000);
-}
+  const div=document.createElement("div");
+  div.className="card";
+  div.innerHTML="<b>"+n+"</b><br>"+p;
+  document.getElementById("listUcapan").prepend(div);
 
-// SHARE WA
-function shareWA(){
-  const link=location.href;
-  const text=`Assalamu’alaikum 🙏
-
-Kami mengundang Bapak/Ibu/Saudara/i
-untuk menghadiri pernikahan kami:
-
-${p} & ${w}
-📅 ${t}
-📍 ${a}
-
-Silakan buka undangan:
-${link}`;
-  window.open("https://wa.me/?text="+encodeURIComponent(text),"_blank");
-}
-
-// UCAPAN
-const key="ucapan_"+location.search;
-const list=document.getElementById("list");
-function render(){
-  list.innerHTML="";
-  const data=JSON.parse(localStorage.getItem(key)||"[]");
-  data.forEach(u=>{
-    const d=document.createElement("div");
-    d.className="ucapan";
-    d.innerHTML="<strong>"+u.n+"</strong><br>"+u.i;
-    list.appendChild(d);
-  });
-}
-render();
-
-function kirim(){
-  const n=namaUcapan.value.trim();
-  const i=isiUcapan.value.trim();
-  if(!n||!i)return;
-  const data=JSON.parse(localStorage.getItem(key)||"[]");
-  data.push({n,i});
-  localStorage.setItem(key,JSON.stringify(data));
-  namaUcapan.value="";isiUcapan.value="";
-  render();
+  document.getElementById("nama").value="";
+  document.getElementById("pesan").value="";
 }
 </script>
 
