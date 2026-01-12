@@ -1,358 +1,240 @@
-/* =============================
+/* ======================================================
    CONFIG
-============================= */
-const API = "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev";
+====================================================== */
+const WORKER_API =
+  "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev";
 
-/* =============================
+/* ======================================================
    STATE
-============================= */
-let currentInvite = null;
-let currentMusic = "wedding1.mp3";
-let countdownTimer = null;
+====================================================== */
+let photoGroomBase64 = "";
+let photoBrideBase64 = "";
 
-/* =============================
+/* ======================================================
    INIT
-============================= */
-window.addEventListener("load", () => {
-  setTimeout(() => loader.style.display = "none", 800);
-  initReveal();
-  initGalleryLightbox();
-  initGuestbookDummy();
-  bootFromQueryId();
+====================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+  bindFileUpload();
+  bindActions();
 });
 
-/* =============================
-   HERO + MUSIC
-============================= */
-const music = document.getElementById("music");
+/* ======================================================
+   BIND EVENTS
+====================================================== */
+function bindActions() {
+  const btnAI = document.getElementById("btnGenerateAI");
+  const btnSave = document.getElementById("btnSaveInvite");
 
-function openInvitation() {
-  document.getElementById("content")
-    .scrollIntoView({ behavior: "smooth" });
-  playMusicSafe();
+  if (btnAI) btnAI.addEventListener("click", generateAI);
+  if (btnSave) btnSave.addEventListener("click", saveInvite);
 }
 
-function playMusicSafe() {
-  music.play().catch(() => {});
-}
+/* ======================================================
+   FILE UPLOAD (COMPRESS → BASE64)
+====================================================== */
+function bindFileUpload() {
+  const groomInput = document.getElementById("photoGroom");
+  const brideInput = document.getElementById("photoBride");
 
-function toggleMusic() {
-  music.paused ? music.play().catch(() => {}) : music.pause();
-}
-
-/* =============================
-   BOTTOM SHEET
-============================= */
-function openSheet() {
-  sheet.classList.add("open");
-}
-function closeSheet() {
-  sheet.classList.remove("open");
-}
-
-/* =============================
-   SCROLL REVEAL
-============================= */
-function initReveal() {
-  const els = document.querySelectorAll(".fade");
-  const io = new IntersectionObserver(
-    entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) e.target.classList.add("show");
-      });
-    },
-    { threshold: 0.12 }
-  );
-  els.forEach(el => io.observe(el));
-}
-
-/* =============================
-   LIGHTBOX
-============================= */
-function initGalleryLightbox() {
-  document.querySelectorAll("#gallery img").forEach(img => {
-    img.onclick = () => openLightbox(img.src);
-  });
-}
-function openLightbox(src) {
-  lightbox.style.display = "flex";
-  lightboxImg.src = src;
-}
-function closeLightbox() {
-  lightbox.style.display = "none";
-  lightboxImg.src = "";
-}
-
-/* =============================
-   GUESTBOOK (DUMMY FRONTEND)
-============================= */
-function initGuestbookDummy() {
-  guestForm.addEventListener("submit", e => {
-    e.preventDefault();
-    const name = guestName.value.trim();
-    const msg = guestMsg.value.trim();
-    const att = guestAttend.value;
-    if (!name || !msg) return;
-
-    const div = document.createElement("div");
-    div.className = "gItem";
-    div.innerHTML =
-      `<strong>${escapeHtml(name)}</strong> ` +
-      `<span style="color:#999">• ${escapeHtml(att)}</span><br>` +
-      `${escapeHtml(msg)}`;
-    guestPreview.prepend(div);
-
-    guestForm.querySelector("button").innerHTML = "Terkirim ✅";
-    setTimeout(() => {
-      guestForm.querySelector("button").innerHTML =
-        `<i class="fa-solid fa-paper-plane"></i> Kirim`;
-    }, 900);
-
-    guestName.value = "";
-    guestMsg.value = "";
-    guestAttend.value = "Hadir";
-  });
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  }[c]));
-}
-
-/* =============================
-   IMAGE COMPRESS
-============================= */
-async function fileToSmallDataURL(file, maxW = 900, quality = 0.78) {
-  const img = await new Promise((res, rej) => {
-    const i = new Image();
-    i.onload = () => res(i);
-    i.onerror = rej;
-    i.src = URL.createObjectURL(file);
-  });
-
-  const scale = Math.min(1, maxW / img.width);
-  const w = Math.round(img.width * scale);
-  const h = Math.round(img.height * scale);
-
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-
-  return canvas.toDataURL("image/jpeg", quality);
-}
-
-/* =============================
-   MAP HELPERS
-============================= */
-function mapToEmbed(q) {
-  return "https://www.google.com/maps?q=" +
-    encodeURIComponent(q || "Indonesia") + "&output=embed";
-}
-function mapToOpen(q) {
-  return "https://www.google.com/maps?q=" +
-    encodeURIComponent(q || "Indonesia");
-}
-
-/* =============================
-   AI GENERATE
-============================= */
-async function generateAndPreview() {
-  const text = prompt.value.trim();
-  if (!text) {
-    sheetHint.textContent = "Isi prompt dulu.";
-    return;
-  }
-
-  sheetHint.textContent = "⏳ Generate AI…";
-
-  // set music
-  currentMusic = musicSelect.value;
-  musicSource.src = currentMusic;
-  music.load();
-
-  const res = await fetch(API + "/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text })
-  });
-
-  const data = await res.json();
-  if (!data.success) {
-    sheetHint.textContent = "❌ AI gagal.";
-    return;
-  }
-
-  let inv = data.invite || {};
-
-  // overrides
-  if (groomOverride.value) inv.groom = groomOverride.value;
-  if (brideOverride.value) inv.bride = brideOverride.value;
-  if (dateOverride.value) inv.date = dateOverride.value;
-  if (akadOverride.value)
-    inv.akad_time = `Akad: ${akadOverride.value}`;
-  if (resepsiOverride.value)
-    inv.resepsi_time = `Resepsi: ${resepsiOverride.value}`;
-  if (venueOverride.value) inv.venue = venueOverride.value;
-  if (mapsOverride.value) inv.maps_query = mapsOverride.value;
-
-  inv.maps_query =
-    inv.maps_query || inv.address || inv.venue || "Indonesia";
-
-  inv.full_text = inv.full_text || "";
-
-  currentInvite = inv;
-  applyInviteToUI(inv);
-
-  sheetHint.textContent = "✅ Berhasil dibuat!";
-}
-
-/* =============================
-   APPLY DATA TO UI
-============================= */
-function applyInviteToUI(inv) {
-  const groom = inv.groom || "(Namamu)";
-  const bride = inv.bride || "(Nama Pasanganmu)";
-  const date = inv.date || "Tanggal Acara";
-
-  heroNames.textContent = `${groom} & ${bride}`;
-  heroDate.textContent = date;
-  groomName.textContent = groom;
-  brideName.textContent = bride;
-  footerNames.textContent = `${groom} & ${bride}`;
-
-  akadInfo.textContent =
-    `${date}\n${inv.akad_time || ""}\n${inv.venue || ""}`;
-  resepsiInfo.textContent =
-    `${date}\n${inv.resepsi_time || ""}\n${inv.venue || ""}`;
-
-  locText.textContent = "📍 " + inv.maps_query;
-  map.src = mapToEmbed(inv.maps_query);
-  openMapsBtn.href = mapToOpen(inv.maps_query);
-
-  startCountdown(inv.date);
-
-  document.getElementById("content")
-    .scrollIntoView({ behavior: "smooth" });
-}
-
-/* =============================
-   COUNTDOWN
-============================= */
-function startCountdown(dateStr) {
-  const dObj = new Date(dateStr);
-  if (isNaN(dObj)) return;
-
-  const target = dObj.getTime();
-  clearInterval(countdownTimer);
-  countdownTimer = setInterval(() => {
-    const diff = target - Date.now();
-    if (diff <= 0) return;
-
-    d.textContent = Math.floor(diff / 86400000);
-    h.textContent = Math.floor(diff / 3600000) % 24;
-    m.textContent = Math.floor(diff / 60000) % 60;
-    s.textContent = Math.floor(diff / 1000) % 60;
-  }, 1000);
-}
-
-/* =============================
-   SAVE TO KV
-============================= */
-async function saveToKVAndMakeLink() {
-  if (!currentInvite) {
-    sheetHint.textContent = "Generate dulu.";
-    return;
-  }
-
-  sheetHint.textContent = "⏳ Menyimpan…";
-
-  const photos = {};
-  if (groomPhoto.files[0])
-    photos.groom = await fileToSmallDataURL(groomPhoto.files[0]);
-  if (bridePhoto.files[0])
-    photos.bride = await fileToSmallDataURL(bridePhoto.files[0]);
-
-  if (galleryPhotos.files.length) {
-    photos.gallery = [];
-    for (const f of [...galleryPhotos.files].slice(0, 10)) {
-      photos.gallery.push(await fileToSmallDataURL(f, 1100, 0.75));
-    }
-  }
-
-  const payload = {
-    invite: currentInvite,
-    aiText: currentInvite.full_text,
-    music: currentMusic,
-    photos
-  };
-
-  const res = await fetch(API + "/invite/save", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-
-  const data = await res.json();
-  if (!data.success) {
-    sheetHint.textContent = "❌ Gagal simpan.";
-    return;
-  }
-
-  const link =
-    location.origin + location.pathname + "?id=" + data.id;
-  await navigator.clipboard.writeText(link);
-  toastShow("Link undangan disalin ✅");
-
-  closeSheet();
-}
-
-/* =============================
-   LOAD FROM ?id=
-============================= */
-async function bootFromQueryId() {
-  const q = new URLSearchParams(location.search);
-  const id = q.get("id");
-  if (!id) return;
-
-  const res = await fetch(API + "/invite/get?id=" + id);
-  if (!res.ok) return;
-
-  const data = await res.json();
-  currentInvite = data.invite;
-  currentMusic = data.music || "wedding1.mp3";
-
-  musicSource.src = currentMusic;
-  music.load();
-
-  if (currentInvite) applyInviteToUI(currentInvite);
-
-  const photos = data.photos || {};
-  if (photos.groom) groomImg.src = photos.groom;
-  if (photos.bride) brideImg.src = photos.bride;
-  if (photos.gallery?.length) {
-    gallery.innerHTML = "";
-    photos.gallery.forEach(src => {
-      const img = document.createElement("img");
-      img.src = src;
-      img.onclick = () => openLightbox(src);
-      gallery.appendChild(img);
+  if (groomInput) {
+    groomInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      photoGroomBase64 = await compressToBase64(file);
+      previewImage("prevGroom", photoGroomBase64);
     });
   }
 
-  toastShow("Undangan dimuat dari link ✅");
+  if (brideInput) {
+    brideInput.addEventListener("change", async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      photoBrideBase64 = await compressToBase64(file);
+      previewImage("prevBride", photoBrideBase64);
+    });
+  }
 }
 
-/* =============================
-   UTIL
-============================= */
-function toastShow(text) {
-  toast.textContent = text;
-  toast.style.display = "block";
-  setTimeout(() => (toast.style.display = "none"), 1600);
+function previewImage(id, src) {
+  const img = document.getElementById(id);
+  if (img) img.src = src;
+}
+
+function compressToBase64(file, maxWidth = 900, quality = 0.78) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width);
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.onerror = () => resolve("");
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+/* ======================================================
+   AI GENERATE
+====================================================== */
+async function generateAI() {
+  const input = getVal("aiText");
+  const hint = document.getElementById("aiHint");
+
+  if (!input) {
+    if (hint) hint.textContent = "❌ Isi prompt terlebih dahulu.";
+    return;
+  }
+
+  if (hint) hint.textContent = "⏳ Menghasilkan undangan dengan AI...";
+
+  try {
+    const res = await fetch(WORKER_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: input }),
+    });
+
+    const json = await res.json();
+    if (!json?.success || !json?.data) {
+      if (hint) hint.textContent = "❌ Gagal generate undangan.";
+      return;
+    }
+
+    const d = json.data;
+
+    // === Autofill form ===
+    setVal("groomName", d.groom);
+    setVal("brideName", d.bride);
+
+    setParents("groom", d.groom_parents);
+    setParents("bride", d.bride_parents);
+
+    setVal("akadDate", normalizeDate(d.date));
+    setVal("resepsiDate", normalizeDate(d.date));
+
+    setVal("akadTime", cleanPrefix(d.akad_time));
+    setVal("resepsiTime", cleanPrefix(d.resepsi_time));
+
+    setVal("akadPlace", d.venue);
+    setVal("resepsiPlace", d.venue);
+
+    setVal("akadAddress", d.address);
+    setVal("resepsiAddress", d.address);
+
+    setVal("mapsQuery", d.maps_query);
+    setVal("story", d.story);
+
+    if (hint) hint.textContent = "✅ Berhasil! Silakan cek & simpan undangan.";
+  } catch (err) {
+    if (hint) hint.textContent = "❌ Error saat memanggil AI.";
+  }
+}
+
+/* ======================================================
+   SAVE INVITE TO WORKER (KV)
+====================================================== */
+async function saveInvite() {
+  const status = document.getElementById("saveHint");
+  if (status) status.textContent = "⏳ Menyimpan undangan...";
+
+  const payload = {
+    invite: {
+      groom: {
+        name: getVal("groomName"),
+        father: getVal("groomFather"),
+        mother: getVal("groomMother"),
+      },
+      bride: {
+        name: getVal("brideName"),
+        father: getVal("brideFather"),
+        mother: getVal("brideMother"),
+      },
+      date: getVal("akadDate"),
+      events: {
+        akad: {
+          date: getVal("akadDate"),
+          time: getVal("akadTime"),
+          place: getVal("akadPlace"),
+          address: getVal("akadAddress"),
+        },
+        resepsi: {
+          date: getVal("resepsiDate"),
+          time: getVal("resepsiTime"),
+          place: getVal("resepsiPlace"),
+          address: getVal("resepsiAddress"),
+        },
+      },
+      mapsQuery: getVal("mapsQuery"),
+      story: getVal("story"),
+      music: getVal("musicSelect") || "wedding1.mp3",
+    },
+    photos: {
+      groom: photoGroomBase64,
+      bride: photoBrideBase64,
+    },
+  };
+
+  try {
+    const res = await fetch(`${WORKER_API}/invites`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const json = await res.json();
+    if (!json?.id) {
+      if (status) status.textContent = "❌ Gagal menyimpan.";
+      return;
+    }
+
+    if (status) status.textContent = "✅ Undangan siap dibuka.";
+    window.location.href = `undangan.html?id=${encodeURIComponent(json.id)}`;
+  } catch (err) {
+    if (status) status.textContent = "❌ Terjadi kesalahan.";
+  }
+}
+
+/* ======================================================
+   HELPERS
+====================================================== */
+function getVal(id) {
+  return (document.getElementById(id)?.value || "").trim();
+}
+
+function setVal(id, value) {
+  if (!value) return;
+  const el = document.getElementById(id);
+  if (el) el.value = value;
+}
+
+function setParents(type, text) {
+  if (!text) return;
+  // Expected: "Putra dari Bapak A & Ibu B"
+  const match = text.match(/Bapak\s+(.*?)\s+&\s+Ibu\s+(.*)/i);
+  if (!match) return;
+
+  if (type === "groom") {
+    setVal("groomFather", match[1]);
+    setVal("groomMother", match[2]);
+  } else {
+    setVal("brideFather", match[1]);
+    setVal("brideMother", match[2]);
+  }
+}
+
+function normalizeDate(dateStr) {
+  if (!dateStr) return "";
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  return dateStr;
+}
+
+function cleanPrefix(text) {
+  if (!text) return "";
+  return text.replace(/Akad Nikah:|Resepsi:/i, "").trim();
 }
