@@ -1,234 +1,200 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>AI Undangan Online</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>AI Undangan Online | EtaWeb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(160deg,#0f0c29,#302b63,#24243e);
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
       color: #fff;
-      padding: 24px;
+      min-height: 100vh;
+      padding: 20px;
     }
-
-    .card {
-      max-width: 420px;
+    .container {
+      max-width: 480px;
       margin: auto;
-      background: #111;
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: 0 20px 40px rgba(0,0,0,.5);
-      animation: fadeUp .6s ease;
+      background: #0d0d0d;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 15px 40px rgba(0,0,0,.6);
+      animation: fadeIn 0.8s ease;
     }
-
-    @keyframes fadeUp {
-      from { opacity:0; transform: translateY(20px); }
-      to { opacity:1; transform: translateY(0); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-
+    .logo {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .logo img {
+      width: 80px;
+    }
     h1 {
       text-align: center;
-      color: #ff3b3b;
-      margin-bottom: 6px;
+      color: #ff4d4d;
+      margin-bottom: 5px;
     }
-
-    .subtitle {
+    p.subtitle {
       text-align: center;
-      font-size: 14px;
       color: #ccc;
-      margin-bottom: 16px;
+      font-size: 14px;
+      margin-bottom: 15px;
     }
-
-    label {
-      font-size: 13px;
-      color: #ddd;
-      margin-top: 10px;
+    .price {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .price s {
+      color: #888;
+      font-size: 14px;
+    }
+    .price strong {
       display: block;
+      font-size: 20px;
+      color: #00ffcc;
     }
-
-    input, select, textarea {
+    select, textarea {
       width: 100%;
-      margin-top: 6px;
       padding: 12px;
       border-radius: 10px;
       border: none;
-      outline: none;
       font-size: 14px;
+      margin-top: 10px;
     }
-
     textarea {
-      min-height: 130px;
+      resize: none;
     }
-
     button {
       width: 100%;
-      margin-top: 14px;
       padding: 14px;
-      border: none;
+      margin-top: 15px;
       border-radius: 12px;
-      font-size: 15px;
-      font-weight: bold;
+      border: none;
+      font-size: 16px;
+      background: linear-gradient(135deg,#ff4d4d,#ff0000);
       color: #fff;
-      background: linear-gradient(135deg,#ff3b3b,#ff7676);
       cursor: pointer;
-      transition: transform .15s ease, opacity .15s ease;
+      transition: transform .2s;
     }
-
     button:active {
       transform: scale(.97);
-      opacity: .85;
     }
-
-    .price {
-      text-align: center;
-      margin: 14px 0;
-    }
-
-    .price del {
-      color: #999;
+    pre {
+      background: #000;
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 15px;
       font-size: 14px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      max-height: 320px;
+      overflow-y: auto;
     }
-
-    .price strong {
-      display: block;
-      font-size: 22px;
-      color: #00ffae;
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 10px;
     }
-
     .wa-float {
       position: fixed;
-      right: 16px;
-      bottom: 16px;
+      bottom: 20px;
+      right: 20px;
       width: 56px;
       height: 56px;
-      background: #25D366;
+      background: #25d366;
+      color: #fff;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #fff;
       font-size: 26px;
       text-decoration: none;
-      box-shadow: 0 10px 25px rgba(0,0,0,.4);
+      box-shadow: 0 8px 25px rgba(0,0,0,.5);
+      animation: pop 1.2s infinite;
     }
-
-    footer {
-      text-align: center;
-      font-size: 12px;
-      color: #aaa;
-      margin-top: 14px;
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="card">
-    <h1>AI Undangan Online</h1>
-    <div class="subtitle">
-      Buat undangan digital otomatis langsung dari HP
-    </div>
-
-    <div class="price">
-      <del>Rp100.000</del>
-      <strong>Rp30.000 / 30 hari</strong>
-    </div>
-
-    <label>Jenis Acara</label>
-    <select id="eventType">
-      <option value="pernikahan">Pernikahan</option>
-      <option value="ulang tahun">Ulang Tahun</option>
-      <option value="aqiqah">Aqiqah</option>
-      <option value="syukuran">Syukuran</option>
-    </select>
-
-    <label>Bahasa</label>
-    <select id="lang">
-      <option value="Indonesia">Indonesia</option>
-      <option value="English">English</option>
-    </select>
-
-    <label>Gaya Bahasa</label>
-    <select id="tone">
-      <option value="formal">Formal</option>
-      <option value="santai">Santai</option>
-      <option value="islami">Islami</option>
-    </select>
-
-    <label>Nama</label>
-    <input id="name1" placeholder="Nama utama / mempelai" />
-
-    <label>Tanggal & Waktu</label>
-    <input id="date" placeholder="Contoh: 10 Agustus 2026 - 10.00 WIB" />
-
-    <label>Tempat</label>
-    <input id="venue" placeholder="Gedung / Lokasi acara" />
-
-    <button onclick="generateAI()">
-      ✨ Generate Teks Undangan
-    </button>
-
-    <label>Hasil Undangan</label>
-    <textarea id="result" placeholder="Hasil teks AI akan muncul di sini..."></textarea>
-
-    <button onclick="copyText()">
-      📋 Salin Teks
-    </button>
-
-    <footer>
-      Powered by EtaWeb • AI Invitation Generator
-    </footer>
+<div class="container">
+  <div class="logo">
+    <img src="logo.png" alt="EtaWeb">
   </div>
 
-  <a class="wa-float"
-     href="https://wa.me/6285719575100?text=Mau%20order%20paket%20promo%20dong"
-     target="_blank">
-    💬
-  </a>
+  <h1>AI Undangan Online</h1>
+  <p class="subtitle">Buat undangan digital otomatis langsung dari HP</p>
 
-  <script>
-    async function generateAI() {
-      const btn = event.target;
-      btn.innerText = "⏳ Memproses...";
-      btn.disabled = true;
+  <div class="price">
+    <s>Rp100.000</s>
+    <strong>Rp30.000 / 30 hari</strong>
+  </div>
 
-      try {
-        const res = await fetch("PASTE_URL_WORKER_KAMU_DI_SINI", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            eventType: document.getElementById("eventType").value,
-            lang: document.getElementById("lang").value,
-            tone: document.getElementById("tone").value,
-            name1: document.getElementById("name1").value,
-            date: document.getElementById("date").value,
-            venue: document.getElementById("venue").value
-          })
-        });
+  <select id="lang">
+    <option value="id">Bahasa Indonesia</option>
+    <option value="en">English</option>
+  </select>
 
-        const data = await res.json();
-        document.getElementById("result").value =
-          data.text || "Gagal menghasilkan teks";
+  <textarea id="input" rows="5" placeholder="Contoh:
+Undangan pernikahan Andi & Siti
+20 Agustus 2025
+Gedung Serbaguna Jakarta"></textarea>
 
-      } catch (e) {
-        alert("Gagal terhubung ke AI");
+  <button onclick="generate()">✨ Buat Undangan</button>
+
+  <pre id="output">Hasil undangan akan muncul di sini…</pre>
+
+  <div class="footer">
+    © EtaWeb • AI Invitation Generator
+  </div>
+</div>
+
+<a class="wa-float"
+   href="https://wa.me/6285719575100?text=Mau%20order%20paket%20promo%20dong"
+   target="_blank">💬</a>
+
+<script>
+async function generate() {
+  const input = document.getElementById("input").value.trim();
+  const lang = document.getElementById("lang").value;
+  const output = document.getElementById("output");
+
+  if (!input) {
+    output.textContent = "Silakan isi deskripsi undangan terlebih dahulu.";
+    return;
+  }
+
+  output.textContent = "⏳ Sedang membuat undangan...";
+
+  try {
+    const response = await fetch(
+      "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: input, lang })
       }
+    );
 
-      btn.innerText = "✨ Generate Teks Undangan";
-      btn.disabled = false;
-    }
-
-    function copyText() {
-      const text = document.getElementById("result");
-      text.select();
-      document.execCommand("copy");
-      alert("Teks berhasil disalin!");
-    }
-  </script>
+    const data = await response.json();
+    output.textContent = data.result || "Gagal menghasilkan undangan.";
+  } catch (e) {
+    output.textContent = "Terjadi kesalahan koneksi.";
+  }
+}
+</script>
 
 </body>
 </html>
