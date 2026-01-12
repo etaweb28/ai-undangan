@@ -1,257 +1,258 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Undangan</title>
+  <meta charset="UTF-8" />
+  <title>Undangan Pernikahan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-  body{margin:0;font-family:Georgia,serif;background:#faf7f2;color:#333;text-align:center}
-  .hidden{display:none}
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f7f4ef;
+      color: #333;
+    }
 
-  /* Opening overlay */
-  .overlay{
-    position:fixed;inset:0;
-    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;
-    z-index:9999;padding:20px;
-  }
-  .overlay .logo{width:80px;height:80px;object-fit:contain;margin-bottom:12px}
-  .overlay .tap{
-    margin-top:14px;padding:12px 18px;border-radius:999px;border:0;
-    background:#c1121f;color:#fff;font-weight:700;
-  }
+    header {
+      background: linear-gradient(135deg,#b11226,#7b0f1d);
+      color: #fff;
+      padding: 50px 20px;
+      text-align: center;
+    }
 
-  .cover{padding:56px 20px;background:linear-gradient(160deg,#e9d8a6,#fff)}
-  .cover img{
-    width:176px;height:176px;border-radius:50%;object-fit:cover;margin-bottom:18px;
-    box-shadow:0 10px 30px rgba(0,0,0,.25);
-    border:4px solid rgba(193,18,31,.25);
-  }
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+    }
 
-  .section{padding:34px 20px}
-  .fade{opacity:0;transform:translateY(16px);transition:.7s}
-  .fade.show{opacity:1;transform:none}
+    header p {
+      margin: 8px 0 0;
+      font-size: 16px;
+    }
 
-  .ai{white-space:pre-line;line-height:1.7}
-  iframe{width:100%;height:300px;border:0;border-radius:12px}
+    section {
+      padding: 30px 20px;
+      max-width: 900px;
+      margin: auto;
+    }
 
-  input,textarea{
-    width:100%;padding:12px;border-radius:10px;border:1px solid #ccc;margin-top:10px
-  }
-  textarea{resize:none;min-height:90px}
-  button{
-    width:100%;padding:12px;border:0;border-radius:12px;background:#c1121f;color:#fff;font-weight:700;margin-top:10px
-  }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #b11226;
+    }
 
-  .ucapan{background:#fff;border-radius:12px;padding:10px;text-align:left;margin-top:10px}
-  .music-btn{
-    position:fixed;bottom:18px;right:18px;width:56px;height:56px;border-radius:50%;
-    background:#c1121f;color:#fff;display:flex;align-items:center;justify-content:center;
-    font-size:22px;box-shadow:0 10px 25px rgba(193,18,31,.45);z-index:999;
-    user-select:none;touch-action:manipulation;
-  }
-  .music-info{
-    position:fixed;bottom:82px;right:12px;background:#fff;color:#333;
-    padding:8px 12px;border-radius:12px;font-size:12px;box-shadow:0 8px 20px rgba(0,0,0,.18)
-  }
-  .watermark{
-    position:fixed;bottom:8px;left:50%;transform:translateX(-50%);
-    font-size:11px;color:#999;opacity:.75;z-index:999;
-  }
-  #countdown{font-weight:800;font-size:16px}
-</style>
+    /* COUNTDOWN */
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .countdown div {
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      width: 70px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,.1);
+    }
+
+    .countdown span {
+      font-size: 20px;
+      font-weight: bold;
+      display: block;
+    }
+
+    /* GALERI */
+    .gallery input {
+      margin-bottom: 15px;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
+      gap: 10px;
+    }
+
+    .gallery-grid img {
+      width: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    /* MAP */
+    iframe {
+      width: 100%;
+      height: 300px;
+      border-radius: 16px;
+      border: none;
+    }
+
+    /* BUTTON */
+    button {
+      background: #b11226;
+      color: #fff;
+      border: none;
+      padding: 14px 18px;
+      border-radius: 14px;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    button:active { transform: scale(.97); }
+
+    /* BUKU TAMU */
+    .guestbook input,
+    .guestbook textarea {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+    }
+
+    .guest-list {
+      margin-top: 15px;
+    }
+
+    .guest-item {
+      background: #fff;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+    }
+
+    /* MUSIC */
+    .music-control {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #b11226;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(0,0,0,.3);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      padding: 20px;
+      color: #777;
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- OPENING (wajib klik untuk mulai musik) -->
-<div class="overlay" id="open">
-  <img class="logo" src="logo.png" alt="logo" />
-  <h2>Undangan Pernikahan</h2>
-  <p style="margin:0;color:#d9d9d9;text-align:center">Tekan tombol untuk membuka undangan dan memutar musik</p>
-  <button class="tap" onclick="mulai()">Buka Undangan</button>
-</div>
+<header>
+  <h1>Hilmi Al Hanif & Yanti</h1>
+  <p>12 Januari 2026</p>
+</header>
 
-<audio id="audio" loop></audio>
-<div class="music-btn hidden" id="musicBtn" onclick="toggleMusic()">🎵</div>
-<div class="music-info hidden" id="musicTitle"></div>
-<div class="watermark hidden" id="wm">Dibuat dengan ❤️ oleh <b>EtaWeb</b></div>
-
-<div id="konten" class="hidden">
-  <div class="cover fade">
-    <img id="foto" style="display:none" alt="foto mempelai">
-    <h1 id="nama"></h1>
-    <p id="tanggal"></p>
+<section>
+  <h2>Menuju Hari Bahagia</h2>
+  <div class="countdown">
+    <div><span id="d">0</span>Hari</div>
+    <div><span id="h">0</span>Jam</div>
+    <div><span id="m">0</span>Menit</div>
+    <div><span id="s">0</span>Detik</div>
   </div>
+</section>
 
-  <div class="section fade">
-    <h3>Menuju Hari Bahagia</h3>
-    <div id="countdown">—</div>
-  </div>
+<section class="gallery">
+  <h2>Galeri Mempelai</h2>
+  <input type="file" multiple accept="image/*" onchange="loadImages(event)">
+  <div class="gallery-grid" id="gallery"></div>
+</section>
 
-  <div class="section fade">
-    <div class="ai" id="aiText">
-Assalamu’alaikum warahmatullahi wabarakatuh.
+<section>
+  <h2>Lokasi Acara</h2>
+  <iframe id="map"></iframe>
+  <button onclick="shareWA()">📲 Bagikan via WhatsApp</button>
+</section>
 
-Dengan memohon rahmat dan ridho Allah SWT,
-kami bermaksud mengundang Bapak/Ibu/Saudara/i
-untuk hadir pada acara pernikahan kami.
-    </div>
-  </div>
+<section class="guestbook">
+  <h2>Ucapan & Doa</h2>
+  <input id="guestName" placeholder="Nama Anda">
+  <textarea id="guestMsg" placeholder="Tulis ucapan dan doa"></textarea>
+  <button onclick="addGuest()">💌 Kirim Ucapan</button>
 
-  <div class="section fade">
-    <h3>Lokasi Acara</h3>
-    <p id="alamat"></p>
-    <iframe id="maps"></iframe>
-    <button onclick="shareWA()">📲 Bagikan via WhatsApp</button>
-  </div>
+  <div class="guest-list" id="guestList"></div>
+</section>
 
-  <div class="section fade">
-    <h3>Ucapan & Doa</h3>
-    <input id="namaUcapan" placeholder="Nama Anda">
-    <textarea id="isiUcapan" placeholder="Tulis ucapan dan doa"></textarea>
-    <button onclick="kirim()">Kirim Ucapan</button>
-    <div id="list"></div>
-  </div>
-</div>
+<footer>
+  Dibuat dengan ❤️ oleh EtaWeb – AI Wedding Invitation
+</footer>
+
+<!-- MUSIC -->
+<div class="music-control" onclick="toggleMusic()">🎵</div>
+<audio id="music" loop>
+  <source src="wedding1.mp3">
+</audio>
 
 <script>
-  // ambil data dari localStorage (lebih stabil daripada URL panjang)
-  const raw = localStorage.getItem('data_undangan');
-  if(!raw){
-    // kalau user buka undangan.html langsung
-    window.location.href = "index.html";
-  }
-  const data = raw ? JSON.parse(raw) : null;
+/* COUNTDOWN */
+const target = new Date("2026-01-12T08:00:00").getTime();
+setInterval(() => {
+  const now = Date.now();
+  const diff = target - now;
+  if (diff < 0) return;
+  d.textContent = Math.floor(diff / (1000*60*60*24));
+  h.textContent = Math.floor(diff / (1000*60*60) % 24);
+  m.textContent = Math.floor(diff / (1000*60) % 60);
+  s.textContent = Math.floor(diff / 1000 % 60);
+}, 1000);
 
-  // set konten
-  const p = data?.p || "";
-  const w = data?.w || "";
-  const t = data?.t || "";
-  const a = data?.a || "";
-  const m = data?.m || "";
-  const g = data?.g || "musik/wedding1.mp3";
+/* MAP AUTO */
+const locationText = "Jl Ahmad Yani Bandung";
+document.getElementById("map").src =
+  "https://www.google.com/maps?q=" + encodeURIComponent(locationText) + "&output=embed";
 
-  document.getElementById('nama').innerText = `${p} & ${w}`;
-  document.getElementById('tanggal').innerText = t;
-  document.getElementById('alamat').innerText = a;
-  document.getElementById('maps').src = m.replace("watch?v=","embed/");
+/* GALLERY */
+function loadImages(e){
+  [...e.target.files].forEach(file=>{
+    const img=document.createElement("img");
+    img.src=URL.createObjectURL(file);
+    gallery.appendChild(img);
+  });
+}
 
-  // foto
-  const fotoData = localStorage.getItem('foto');
-  const fotoEl = document.getElementById('foto');
-  if(fotoData){
-    fotoEl.src = fotoData;
-    fotoEl.style.display = "inline-block";
-  }
+/* GUESTBOOK */
+function addGuest(){
+  if(!guestName.value || !guestMsg.value) return;
+  const div=document.createElement("div");
+  div.className="guest-item";
+  div.innerHTML="<b>"+guestName.value+"</b><br>"+guestMsg.value;
+  guestList.prepend(div);
+  guestName.value=guestMsg.value="";
+}
 
-  // Judul musik
-  const musicMap = {
-    "musik/wedding1.mp3": "You're Still The One – Shania Twain",
-    "musik/wedding2.mp3": "Pilihanku – MALIQ & D'Essentials",
-    "musik/wedding3.mp3": "Beautiful In White – Shane Filan"
-  };
+/* MUSIC */
+let play=false;
+function toggleMusic(){
+  play=!play;
+  play?music.play():music.pause();
+}
 
-  const audio = document.getElementById('audio');
-  audio.src = g;
-  document.getElementById('musicTitle').innerText = "🎵 " + (musicMap[g] || "Lagu Pernikahan");
-
-  // BUKA UNDANGAN (fix: hide overlay dulu, baru play)
-  function mulai(){
-    document.getElementById('open').style.display = "none";
-    document.getElementById('konten').classList.remove('hidden');
-
-    // show floating UI
-    document.getElementById('musicBtn').classList.remove('hidden');
-    document.getElementById('musicTitle').classList.remove('hidden');
-    document.getElementById('wm').classList.remove('hidden');
-
-    // animasi section
-    document.querySelectorAll('.fade').forEach((el,i)=>{
-      setTimeout(()=>el.classList.add('show'), i*160);
-    });
-
-    // play musik (aman karena user klik tombol)
-    audio.play().catch(()=>{});
-
-    // countdown
-    startCountdown(t);
-  }
-
-  function toggleMusic(){
-    audio.paused ? audio.play().catch(()=>{}) : audio.pause();
-  }
-
-  // Countdown (butuh tanggal format yang terbaca)
-  function startCountdown(dateStr){
-    const el = document.getElementById('countdown');
-    const target = new Date(dateStr).getTime();
-    if(!target || Number.isNaN(target)){
-      el.innerText = "Format tanggal belum valid (pakai YYYY-MM-DD)";
-      return;
-    }
-    setInterval(()=>{
-      const now = Date.now();
-      const diff = target - now;
-      if(diff <= 0){
-        el.innerText = "Hari ini hari bahagia 💍";
-        return;
-      }
-      const hari = Math.floor(diff / (1000*60*60*24));
-      const jam  = Math.floor((diff / (1000*60*60)) % 24);
-      const menit= Math.floor((diff / (1000*60)) % 60);
-      const detik= Math.floor((diff / 1000) % 60);
-      el.innerText = `${hari} Hari • ${jam} Jam • ${menit} Menit • ${detik} Detik`;
-    },1000);
-  }
-
-  // Share WA
-  function shareWA(){
-    const link = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/') + "index.html";
-    const text =
-`Assalamu’alaikum 🙏
-
-Kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri pernikahan kami:
-
-${p} & ${w}
-📅 ${t}
-📍 ${a}
-
-Silakan buka undangan:
-${link}`;
-    window.open("https://wa.me/?text="+encodeURIComponent(text), "_blank");
-  }
-
-  // Ucapan (local)
-  const key = "ucapan_" + p + "_" + w + "_" + t;
-  const list = document.getElementById('list');
-
-  function render(){
-    list.innerHTML = "";
-    const data = JSON.parse(localStorage.getItem(key) || "[]");
-    data.forEach(u=>{
-      const d = document.createElement('div');
-      d.className = "ucapan";
-      d.innerHTML = `<strong>${u.n}</strong><br>${u.i}`;
-      list.appendChild(d);
-    });
-  }
-  render();
-
-  function kirim(){
-    const n = document.getElementById('namaUcapan').value.trim();
-    const i = document.getElementById('isiUcapan').value.trim();
-    if(!n || !i) return;
-
-    const data = JSON.parse(localStorage.getItem(key) || "[]");
-    data.unshift({n,i});
-    localStorage.setItem(key, JSON.stringify(data));
-
-    document.getElementById('namaUcapan').value = "";
-    document.getElementById('isiUcapan').value = "";
-    render();
-  }
+/* SHARE WA */
+function shareWA(){
+  const text=encodeURIComponent("Undangan Pernikahan Hilmi & Yanti\n"+location.href);
+  window.open("https://wa.me/?text="+text);
+}
 </script>
 
 </body>
