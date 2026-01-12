@@ -28,13 +28,6 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    .logo {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .logo img {
-      width: 80px;
-    }
     h1 {
       text-align: center;
       color: #ff4d4d;
@@ -46,20 +39,7 @@
       font-size: 14px;
       margin-bottom: 15px;
     }
-    .price {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    .price s {
-      color: #888;
-      font-size: 14px;
-    }
-    .price strong {
-      display: block;
-      font-size: 20px;
-      color: #00ffcc;
-    }
-    select, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 12px;
       border-radius: 10px;
@@ -67,9 +47,7 @@
       font-size: 14px;
       margin-top: 10px;
     }
-    textarea {
-      resize: none;
-    }
+    textarea { resize: none; }
     button {
       width: 100%;
       padding: 14px;
@@ -80,10 +58,6 @@
       background: linear-gradient(135deg,#ff4d4d,#ff0000);
       color: #fff;
       cursor: pointer;
-      transition: transform .2s;
-    }
-    button:active {
-      transform: scale(.97);
     }
     pre {
       background: #000;
@@ -92,9 +66,7 @@
       margin-top: 15px;
       font-size: 14px;
       white-space: pre-wrap;
-      line-height: 1.5;
-      max-height: 320px;
-      overflow-y: auto;
+      line-height: 1.6;
     }
     .footer {
       text-align: center;
@@ -102,97 +74,105 @@
       color: #888;
       margin-top: 10px;
     }
-    .wa-float {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 56px;
-      height: 56px;
-      background: #25d366;
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      text-decoration: none;
-      box-shadow: 0 8px 25px rgba(0,0,0,.5);
-      animation: pop 1.2s infinite;
-    }
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.08); }
-      100% { transform: scale(1); }
-    }
   </style>
 </head>
 
 <body>
 
 <div class="container">
-  <div class="logo">
-    <img src="logo.png" alt="EtaWeb">
-  </div>
+  <h1>AI Undangan Pernikahan</h1>
+  <p class="subtitle">Gratis • Otomatis • Bisa jadi Web Undangan</p>
 
-  <h1>AI Undangan Online</h1>
-  <p class="subtitle">Buat undangan digital otomatis langsung dari HP</p>
+  <input id="pria" placeholder="Nama Pengantin Pria">
+  <input id="wanita" placeholder="Nama Pengantin Wanita">
+  <input id="tanggal" placeholder="Tanggal Acara">
+  <textarea id="alamat" placeholder="Alamat Acara"></textarea>
 
-  <div class="price">
-    <s>Rp100.000</s>
-    <strong>Rp30.000 / 30 hari</strong>
-  </div>
+  <input type="file" id="foto" accept="image/*">
 
-  <select id="lang">
-    <option value="id">Bahasa Indonesia</option>
-    <option value="en">English</option>
+  <label style="margin-top:10px;display:block">Pilih Lagu</label>
+  <select id="lagu">
+    <option value="musik/romantis1.mp3">Romantis 1</option>
+    <option value="musik/romantis2.mp3">Romantis 2</option>
+    <option value="musik/islami.mp3">Islami</option>
   </select>
 
-  <textarea id="input" rows="5" placeholder="Contoh:
-Undangan pernikahan Andi & Siti
-20 Agustus 2025
-Gedung Serbaguna Jakarta"></textarea>
+  <button onclick="buat()">✨ Buat Web Undangan</button>
 
-  <button onclick="generate()">✨ Buat Undangan</button>
+  <pre id="status">Menunggu input…</pre>
 
-  <pre id="output">Hasil undangan akan muncul di sini…</pre>
-
-  <div class="footer">
-    © EtaWeb • AI Invitation Generator
-  </div>
+  <div class="footer">© EtaWeb AI Invitation</div>
 </div>
 
-<a class="wa-float"
-   href="https://wa.me/6285719575100?text=Mau%20order%20paket%20promo%20dong"
-   target="_blank">💬</a>
-
 <script>
-async function generate() {
-  const input = document.getElementById("input").value.trim();
-  const lang = document.getElementById("lang").value;
-  const output = document.getElementById("output");
+/* ===============================
+   GANTI DENGAN API WORKER KAMU
+   =============================== */
+const API_URL = "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev";
 
-  if (!input) {
-    output.textContent = "Silakan isi deskripsi undangan terlebih dahulu.";
+function buat(){
+  const p = pria.value.trim();
+  const w = wanita.value.trim();
+  const t = tanggal.value.trim();
+  const a = alamat.value.trim();
+  const g = lagu.value;
+  const f = foto.files[0];
+
+  if(!p || !w || !t || !a){
+    alert("Lengkapi semua data (foto opsional)");
     return;
   }
 
-  output.textContent = "⏳ Sedang membuat undangan...";
+  const prompt = `
+Buatkan teks undangan pernikahan yang sopan, rapi, dan siap dibagikan.
 
-  try {
-    const response = await fetch(
-      "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: input, lang })
-      }
-    );
+Nama Pengantin Pria: ${p}
+Nama Pengantin Wanita: ${w}
+Tanggal Acara: ${t}
+Lokasi Acara: ${a}
 
-    const data = await response.json();
-    output.textContent = data.result || "Gagal menghasilkan undangan.";
-  } catch (e) {
-    output.textContent = "Terjadi kesalahan koneksi.";
-  }
+Gunakan Bahasa Indonesia yang baik.
+Tanpa huruf kapital semua.
+Tanpa placeholder.
+Format rapi dengan spasi baris.
+`;
+
+  status.innerText = "⏳ Memproses AI…";
+
+  fetch(API_URL,{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ prompt })
+  })
+  .then(r => r.json())
+  .then(d => {
+    localStorage.setItem("ai_text", d.result || "");
+
+    if(f){
+      const reader = new FileReader();
+      reader.onload = e => {
+        localStorage.setItem("foto", e.target.result);
+        lanjut(p,w,t,a,g);
+      };
+      reader.readAsDataURL(f);
+    } else {
+      localStorage.removeItem("foto");
+      lanjut(p,w,t,a,g);
+    }
+  })
+  .catch(()=>{
+    status.innerText = "❌ Gagal terhubung ke AI";
+  });
+}
+
+function lanjut(p,w,t,a,g){
+  location.href =
+    "undangan.html"+
+    "?p="+encodeURIComponent(p)+
+    "&w="+encodeURIComponent(w)+
+    "&t="+encodeURIComponent(t)+
+    "&a="+encodeURIComponent(a)+
+    "&g="+encodeURIComponent(g);
 }
 </script>
 
