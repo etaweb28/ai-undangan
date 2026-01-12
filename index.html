@@ -1,130 +1,95 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>AI Undangan Online | EtaWeb</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-      color: #fff;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .container {
-      max-width: 480px;
-      margin: auto;
-      background: #0d0d0d;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 15px 40px rgba(0,0,0,.6);
-      animation: fadeIn 0.8s ease;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    h1 {
-      text-align: center;
-      color: #ff4d4d;
-      margin-bottom: 5px;
-    }
-    p.subtitle {
-      text-align: center;
-      color: #ccc;
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-size: 14px;
-      margin-top: 10px;
-    }
-    textarea { resize: none; }
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 15px;
-      border-radius: 12px;
-      border: none;
-      font-size: 16px;
-      background: linear-gradient(135deg,#ff4d4d,#ff0000);
-      color: #fff;
-      cursor: pointer;
-    }
-    pre {
-      background: #000;
-      padding: 15px;
-      border-radius: 12px;
-      margin-top: 15px;
-      font-size: 14px;
-      white-space: pre-wrap;
-      line-height: 1.6;
-    }
-    .footer {
-      text-align: center;
-      font-size: 12px;
-      color: #888;
-      margin-top: 10px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>AI Undangan Pernikahan</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+  margin:0;font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;padding:20px
+}
+.container{
+  max-width:480px;margin:auto;
+  background:#0d0d0d;border-radius:16px;
+  padding:20px;box-shadow:0 15px 40px rgba(0,0,0,.6)
+}
+h1{text-align:center;color:#ff4d4d}
+label{display:block;margin-top:12px;color:#ccc;font-size:13px}
+input,textarea,select{
+  width:100%;padding:12px;margin-top:6px;
+  border-radius:10px;border:none;font-size:14px
+}
+textarea{resize:none}
+button{
+  width:100%;padding:14px;margin-top:16px;
+  border-radius:12px;border:none;
+  background:linear-gradient(135deg,#ff4d4d,#ff0000);
+  color:#fff;font-size:16px;cursor:pointer
+}
+pre{
+  background:#000;padding:12px;border-radius:10px;
+  margin-top:12px;font-size:13px;white-space:pre-wrap
+}
+small{color:#aaa}
+</style>
 </head>
 
 <body>
-
 <div class="container">
-  <h1>AI Undangan Pernikahan</h1>
-  <p class="subtitle">Gratis • Otomatis • Bisa jadi Web Undangan</p>
+<h1>AI Undangan Pernikahan</h1>
 
-  <input id="pria" placeholder="Nama Pengantin Pria">
-  <input id="wanita" placeholder="Nama Pengantin Wanita">
-  <input id="tanggal" placeholder="Tanggal Acara">
-  <textarea id="alamat" placeholder="Alamat Acara"></textarea>
+<label>Nama Pengantin Pria</label>
+<input id="pria">
 
-  <input type="file" id="foto" accept="image/*">
+<label>Nama Pengantin Wanita</label>
+<input id="wanita">
 
-  <label style="margin-top:10px;display:block">Pilih Lagu</label>
-  <select id="lagu">
-    <option value="musik/romantis1.mp3">Romantis 1</option>
-    <option value="musik/romantis2.mp3">Romantis 2</option>
-    <option value="musik/islami.mp3">Islami</option>
-  </select>
+<label>Tanggal Acara (YYYY-MM-DD)</label>
+<input id="tanggal">
 
-  <button onclick="buat()">✨ Buat Web Undangan</button>
+<label>Alamat Lengkap Acara</label>
+<textarea id="alamat"></textarea>
 
-  <pre id="status">Menunggu input…</pre>
+<label>Link Google Maps</label>
+<input id="maps">
 
-  <div class="footer">© EtaWeb AI Invitation</div>
+<label>Pilih Lagu Undangan</label>
+<select id="lagu">
+  <option value="musik/wedding1.mp3">🎵 You're Still The One – Shania Twain</option>
+  <option value="musik/wedding2.mp3">🎵 Pilihanku – MALIQ & D'Essentials</option>
+  <option value="musik/wedding3.mp3">🎵 Beautiful In White – Shane Filan</option>
+</select>
+
+<label>Foto Mempelai (opsional)</label>
+<input type="file" id="foto" accept="image/*">
+<small>Disarankan foto persegi (1:1)</small>
+
+<button onclick="buat()">✨ Buat Web Undangan</button>
+
+<pre id="status">Siap membuat undangan…</pre>
 </div>
 
 <script>
-/* ===============================
-   GANTI DENGAN API WORKER KAMU
-   =============================== */
 const API_URL = "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev";
 
 function buat(){
-  const p = pria.value.trim();
-  const w = wanita.value.trim();
-  const t = tanggal.value.trim();
-  const a = alamat.value.trim();
-  const g = lagu.value;
-  const f = foto.files[0];
+  const p=pria.value.trim(),
+        w=wanita.value.trim(),
+        t=tanggal.value.trim(),
+        a=alamat.value.trim(),
+        m=maps.value.trim(),
+        g=lagu.value,
+        f=foto.files[0];
 
-  if(!p || !w || !t || !a){
-    alert("Lengkapi semua data (foto opsional)");
+  if(!p||!w||!t||!a||!m){
+    alert("Lengkapi semua data kecuali foto");
     return;
   }
 
   const prompt = `
-Buatkan teks undangan pernikahan yang sopan, rapi, dan siap dibagikan.
+Buatkan teks undangan pernikahan yang sopan, rapi, dan elegan.
 
 Nama Pengantin Pria: ${p}
 Nama Pengantin Wanita: ${w}
@@ -133,48 +98,44 @@ Lokasi Acara: ${a}
 
 Gunakan Bahasa Indonesia yang baik.
 Tanpa huruf kapital semua.
-Tanpa placeholder.
 Format rapi dengan spasi baris.
 `;
 
-  status.innerText = "⏳ Memproses AI…";
+  status.innerText="⏳ Memproses AI…";
 
   fetch(API_URL,{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ prompt })
+    body:JSON.stringify({ prompt })
   })
-  .then(r => r.json())
-  .then(d => {
-    localStorage.setItem("ai_text", d.result || "");
-
+  .then(r=>r.json())
+  .then(d=>{
+    localStorage.setItem("ai_text",d.result||"");
     if(f){
-      const reader = new FileReader();
-      reader.onload = e => {
-        localStorage.setItem("foto", e.target.result);
-        lanjut(p,w,t,a,g);
+      const reader=new FileReader();
+      reader.onload=e=>{
+        localStorage.setItem("foto",e.target.result);
+        lanjut(p,w,t,a,m,g);
       };
       reader.readAsDataURL(f);
-    } else {
+    }else{
       localStorage.removeItem("foto");
-      lanjut(p,w,t,a,g);
+      lanjut(p,w,t,a,m,g);
     }
   })
-  .catch(()=>{
-    status.innerText = "❌ Gagal terhubung ke AI";
-  });
+  .catch(()=>status.innerText="❌ Gagal terhubung ke AI");
 }
 
-function lanjut(p,w,t,a,g){
-  location.href =
+function lanjut(p,w,t,a,m,g){
+  location.href=
     "undangan.html"+
     "?p="+encodeURIComponent(p)+
     "&w="+encodeURIComponent(w)+
     "&t="+encodeURIComponent(t)+
     "&a="+encodeURIComponent(a)+
+    "&m="+encodeURIComponent(m)+
     "&g="+encodeURIComponent(g);
 }
 </script>
-
 </body>
 </html>
