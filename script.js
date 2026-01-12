@@ -1,153 +1,78 @@
-/* ===============================
-   CONFIG
-================================ */
-const API_URL = "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev/generate";
+/* =============================
+   KONFIGURASI (SUDAH FIX)
+============================= */
+const API = "https://dry-mud-3b8ai-undangan-api.etaweb90.workers.dev";
 
-/* ===============================
-   AMPOP / OPEN INVITATION
-================================ */
-document.addEventListener("DOMContentLoaded", () => {
-  const envelope = document.getElementById("openEnvelope");
-  if (envelope) {
-    envelope.addEventListener("click", () => {
-      envelope.classList.add("opened");
-      setTimeout(() => {
-        window.location.href = "undangan.html";
-      }, 800);
-    });
-  }
-});
+let lastAIResult = "";
 
-/* ===============================
-   AI GENERATE UNDANGAN
-================================ */
-async function generateInvitation() {
-  const input = document.getElementById("prompt").value;
-  const output = document.getElementById("hasilAI");
+/* =============================
+   GENERATE AI UNDANGAN
+============================= */
+async function generateAI() {
+  const text = document.getElementById("inputText").value;
+  const output = document.getElementById("result");
 
-  if (!input) {
-    alert("Isi data undangan dulu");
+  if (!text) {
+    alert("Silakan tulis rencana pernikahan dulu");
     return;
   }
 
-  output.innerText = "⏳ Membuat undangan...";
+  output.textContent = "⏳ Sedang membuat undangan…";
 
   try {
-    const res = await fetch(API_URL, {
+    const res = await fetch(API + "/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: input })
+      body: JSON.stringify({ text })
     });
 
     const data = await res.json();
-    output.innerText = data.result || "Gagal generate undangan";
+
+    if (!data.success) {
+      output.textContent = "❌ Gagal generate undangan";
+      return;
+    }
+
+    lastAIResult = data.result;
+    output.textContent = data.result;
+
   } catch (err) {
-    output.innerText = "❌ Koneksi AI gagal";
+    output.textContent = "❌ Tidak bisa terhubung ke server AI";
   }
 }
 
-/* ===============================
-   MUSIK PLAYER
-================================ */
-let audio = new Audio();
-let currentMusic = "";
-
-function playMusic(file, title) {
-  if (currentMusic !== file) {
-    audio.src = file;
-    audio.loop = true;
-    currentMusic = file;
-  }
-  audio.play();
-  document.getElementById("musicTitle").innerText = title;
-}
-
-function toggleMusic() {
-  if (audio.paused) audio.play();
-  else audio.pause();
-}
-
-/* ===============================
-   GOOGLE MAPS AUTO EMBED
-================================ */
-function loadMap() {
-  const input = document.getElementById("mapInput").value;
-  if (!input) return;
-
-  let embed = input;
-
-  if (!input.includes("embed")) {
-    embed =
-      "https://www.google.com/maps?q=" +
-      encodeURIComponent(input) +
-      "&output=embed";
+/* =============================
+   SIMPAN UNDANGAN + BUKA WEB
+============================= */
+async function saveAndOpen() {
+  if (!lastAIResult) {
+    alert("Generate undangan dulu");
+    return;
   }
 
-  document.getElementById("mapFrame").src = embed;
-}
+  const music = document.getElementById("musicSelect").value;
 
-/* ===============================
-   COUNTDOWN ACARA
-================================ */
-function startCountdown(dateString) {
-  const target = new Date(dateString).getTime();
+  try {
+    const res = await fetch(API + "/invite/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        aiText: lastAIResult,
+        music: music
+      })
+    });
 
-  setInterval(() => {
-    const now = new Date().getTime();
-    const diff = target - now;
+    const data = await res.json();
 
-    if (diff < 0) return;
+    if (!data.success) {
+      alert("Gagal menyimpan undangan");
+      return;
+    }
 
-    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const m = Math.floor((diff / (1000 * 60)) % 60);
-    const s = Math.floor((diff / 1000) % 60);
+    // redirect ke halaman undangan
+    window.location.href = `undangan.html?id=${data.id}`;
 
-    document.getElementById("countdown").innerText =
-      `${d} Hari ${h} Jam ${m} Menit ${s} Detik`;
-  }, 1000);
-}
-
-/* ===============================
-   GALERI FOTO (UPLOAD)
-================================ */
-function previewGallery(input) {
-  const gallery = document.getElementById("gallery");
-  gallery.innerHTML = "";
-
-  [...input.files].forEach(file => {
-    const img = document.createElement("img");
-    img.src = URL.createObjectURL(file);
-    img.className = "gallery-img";
-    gallery.appendChild(img);
-  });
-}
-
-/* ===============================
-   BUKU TAMU
-================================ */
-function submitGuest() {
-  const name = document.getElementById("guestName").value;
-  const msg = document.getElementById("guestMsg").value;
-
-  if (!name || !msg) return;
-
-  const list = document.getElementById("guestList");
-  const item = document.createElement("div");
-
-  item.className = "guest-item";
-  item.innerHTML = `<strong>${name}</strong><p>${msg}</p>`;
-  list.prepend(item);
-
-  document.getElementById("guestName").value = "";
-  document.getElementById("guestMsg").value = "";
-}
-
-/* ===============================
-   SHARE WHATSAPP
-================================ */
-function shareWA() {
-  const url = window.location.href;
-  const text = `Assalamualaikum 🙏\nKami mengundang Anda ke acara pernikahan kami:\n${url}`;
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+  } catch (err) {
+    alert("Server tidak bisa diakses");
+  }
 }
