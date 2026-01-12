@@ -8,98 +8,57 @@
   <style>
     body{
       margin:0;
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: radial-gradient(circle at top, #1a1a2e, #0b0b10);
+      font-family:'Segoe UI',Arial,sans-serif;
+      background:radial-gradient(circle at top,#1a1a2e,#0b0b10);
       color:white;
       padding:60px 20px;
       text-align:center;
     }
-
     .card{
       max-width:420px;
       margin:auto;
-      background: linear-gradient(180deg, #1c1c2b, #141421);
+      background:linear-gradient(180deg,#1c1c2b,#141421);
       padding:28px 22px;
       border-radius:18px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      box-shadow:0 20px 40px rgba(0,0,0,.5);
     }
-
-    img{
-      width:120px;
-      margin-bottom:20px;
-    }
-
-    h1{
-      color:#ff2f44;
-      font-size:26px;
-      margin-bottom:10px;
-    }
-
-    p{
-      color:#cfcfd8;
-      font-size:14px;
-      margin-bottom:22px;
-    }
-
-    .price-old{
-      text-decoration:line-through;
-      color:#888;
-      font-size:14px;
-    }
-
-    h2{
-      font-size:22px;
-      margin:10px 0 20px;
-    }
-
+    img{width:120px;margin-bottom:20px}
+    h1{color:#ff2f44;font-size:26px;margin-bottom:10px}
+    p{color:#cfcfd8;font-size:14px}
+    .price-old{text-decoration:line-through;color:#888;font-size:14px}
+    h2{font-size:22px;margin:10px 0 20px}
     .btn{
       display:block;
       padding:14px;
       border-radius:12px;
       text-decoration:none;
-      background: linear-gradient(135deg, #ff2f44, #ff5a6d);
+      background:linear-gradient(135deg,#ff2f44,#ff5a6d);
       color:white;
       font-weight:bold;
       font-size:16px;
+      margin-top:12px;
+      cursor:pointer;
+      border:none;
+      width:100%;
     }
-
-    .section{
-      margin-top:30px;
-      text-align:left;
-    }
-
-    .section h3{
-      margin-bottom:8px;
-    }
-
-    ul{
+    select,textarea{
+      width:100%;
+      padding:12px;
+      border-radius:10px;
+      border:none;
+      margin-top:10px;
       font-size:14px;
-      color:#bdbdc7;
-      padding-left:18px;
-      margin-top:0;
     }
-
-    hr{
-      border:0;
-      border-top:1px solid #333;
-      margin:20px 0;
-    }
-
+    textarea{min-height:140px}
+    .section{text-align:left;margin-top:30px}
+    ul{color:#bdbdc7;font-size:14px;padding-left:18px}
+    hr{border:0;border-top:1px solid #333;margin:20px 0}
     .wa-float{
-      position:fixed;
-      right:20px;
-      bottom:20px;
-      width:56px;
-      height:56px;
-      background:#25D366;
-      border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:26px;
-      color:white;
-      text-decoration:none;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      position:fixed;right:20px;bottom:20px;
+      width:56px;height:56px;background:#25D366;
+      border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:26px;color:white;
+      text-decoration:none;box-shadow:0 10px 25px rgba(0,0,0,.4);
       z-index:999;
     }
   </style>
@@ -107,61 +66,69 @@
 
 <body>
 
-  <div class="card">
-    <img src="logo.png" alt="Eta Web">
+<div class="card">
+  <img src="logo.png" alt="Eta Web">
 
-    <h1>AI Undangan Online</h1>
-    <p>Buat undangan digital pernikahan & acara lainnya langsung dari HP</p>
+  <h1>AI Undangan Online</h1>
+  <p>Buat undangan digital langsung dari HP</p>
 
-    <div class="price-old">Rp100.000</div>
-    <h2>🔥 Rp30.000 / 30 hari</h2>
+  <div class="price-old">Rp100.000</div>
+  <h2>🔥 Rp30.000 / 30 hari</h2>
 
-    <a
-      href="https://wa.me/6285719575100?text=Mau%20order%20paket%20promo%20dong"
-      target="_blank"
-      class="btn"
-    >
-      Order via WhatsApp
-    </a>
-
-    <div class="section">
-      <h3>FREE</h3>
-      <ul>
-        <li>Template dasar</li>
-        <li>Edit teks undangan</li>
-        <li>Bisa dibuka di HP</li>
-        <li>Tidak ada AI</li>
-      </ul>
-
-      <hr>
-
-      <h3 style="color:#ff2f44;">PRO (PROMO)</h3>
-      <ul>
-        <li>Semua template premium</li>
-        <li>AI teks undangan otomatis</li>
-        <li>Link undangan siap share</li>
-        <li>QR Code undangan</li>
-        <li>Berlaku 30 hari</li>
-      </ul>
-
-      <a
-        href="https://wa.me/6285719575100?text=Mau%20order%20paket%20promo%20dong"
-        target="_blank"
-        class="btn"
-        style="margin-top:16px;"
-      >
-        Upgrade ke PRO
-      </a>
-    </div>
-  </div>
-
-  <a
-    href="https://wa.me/6285719575100?text=Mau%20order%20paket%20promo%20dong"
-    target="_blank"
-    class="wa-float"
-  >
-    💬
+  <a href="https://wa.me/6285719575100?text=Mau%20order%20paket%20promo%20dong"
+     target="_blank" class="btn">
+    Order via WhatsApp
   </a>
+
+  <div class="section">
+    <h3>FREE</h3>
+    <ul>
+      <li>Edit teks manual</li>
+      <li>Template dasar</li>
+      <li>Tidak ada AI</li>
+    </ul>
+
+    <hr>
+
+    <h3 style="color:#ff2f44;">PRO (AI Generator)</h3>
+
+    <select id="event">
+      <option value="">Pilih Jenis Acara</option>
+      <option value="wedding">Pernikahan</option>
+      <option value="birthday">Ulang Tahun</option>
+      <option value="aqiqah">Aqiqah</option>
+      <option value="syukuran">Syukuran</option>
+    </select>
+
+    <button class="btn" onclick="generateText()">
+      ✨ Generate Teks Undangan
+    </button>
+
+    <textarea id="result" placeholder="Hasil teks undangan akan muncul di sini..."></textarea>
+  </div>
+</div>
+
+<a href="https://wa.me/6285719575100?text=Mau%20order%20paket%20promo%20dong"
+   target="_blank" class="wa-float">💬</a>
+
+<script>
+function generateText(){
+  const e=document.getElementById("event").value;
+  let t="";
+  if(e==="wedding"){
+    t="Dengan memohon rahmat Tuhan Yang Maha Esa, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami.";
+  }else if(e==="birthday"){
+    t="Dengan penuh sukacita, kami mengundang Anda untuk hadir dalam acara ulang tahun kami.";
+  }else if(e==="aqiqah"){
+    t="Sebagai ungkapan rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara aqiqah.";
+  }else if(e==="syukuran"){
+    t="Dalam rangka rasa syukur, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara syukuran.";
+  }else{
+    t="Silakan pilih jenis acara terlebih dahulu.";
+  }
+  document.getElementById("result").value=t;
+}
+</script>
 
 </body>
 </html>
